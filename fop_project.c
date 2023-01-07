@@ -28,6 +28,7 @@ int main(){
                 char path[200];
                 char c;
                    if((c=getchar())=='"'){
+
                        getchar();
                         int i=0;
 
@@ -56,24 +57,26 @@ int main(){
 
                         int i=0;
 
-                        while((c=getchar())!='\n'){
+                        do{
+                           c=getchar();
                            path[i]=c;
                            i++;
-                        }
-                        int j=0;
-                         char path1[200];
+                        }while(c!='\n');
 
-                            while(path[j]!='"'){
+                        int j=0;
+                         char path2[200];
+
+                            while(path[j]!='\n'){
                                 if(path[j]=='/'){
 
-                                    path1[j]='\0';
-                                    mkdir(path1);
+                                    path2[j]='\0';
+                                    mkdir(path2);
                                 }
-                                path1[j]=path[j];
+                                path2[j]=path[j];
                                 j++;
                             }
-                            path1[j-1]='\0';
-                            fp=fopen(path1,"w");
+                            path2[j]='\0';
+                            fp=fopen(path2,"w");
                    }
 
 
