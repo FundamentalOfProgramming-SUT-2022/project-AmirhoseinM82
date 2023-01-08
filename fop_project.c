@@ -22,7 +22,7 @@ int main(){
 
          char f[7];
          scanf("%s",f);
-           getchar();
+         getchar();
              if(strcmp(f,"--file")==0){
 
                 char path[200];
@@ -81,6 +81,128 @@ int main(){
 
 
          }else{printf("Invalid command\n");}
+
+    }else
+    if(strcmp(command,"insertstr")==0){
+
+        char f[7];
+        scanf("%s",f);
+        getchar();
+        if(strcmp(f,"--file")==0){
+
+            char path[200];
+            char c;
+            if((c=getchar())=='"'){
+                    getchar();
+                    int i=0;
+                    while((c=getchar())!='"'){
+                        path[i]=c;
+                        i++;
+                    }
+                    //printf("%s ",path);
+                           for(int i=0;i<7;i++) getchar();
+                           char string[500];
+                           char s;
+                           if((s=getchar())=='"'){
+                               int j=0;
+
+                               /*while(1){
+                                  char a,b,c;
+                                  a=getchar();
+                                  if(a=='\\'){
+                                     b=getchar();
+                                     if(b=='\\'){
+                                        string[j]='\\';
+                                        j++;
+                                        string[j]=getchar();
+                                        j++;
+                                     }else{
+                                        string[j]='\n';
+                                        j++;
+                                     }
+                                  }else
+                                  if(a=='"'){
+                                     b=getchar();
+                                     if(b==' '){
+                                          c=getchar();
+                                          if(c=='-'){
+                                             break;
+                                          }else{
+                                            string[j]='"';
+                                            j++;
+                                            string[j]=' ';
+                                            j++;
+                                            string[j]=c;
+                                            j++;
+                                          }
+                                     }
+                                     else{
+                                        string[j]='"';
+                                        j++;
+                                        string[j]=b;
+                                        j++;
+                                     }
+                                  }else if(a!='\\' && a!='"'){
+                                  string[j]=a;
+                                  j++;
+                                  }
+                               }*/
+                               while((s=getchar())!='"'){
+                                    string[j]=s;
+                                    j++;
+                               }
+                                //printf("%s ",string);
+                                    for(int i=0;i<7;i++) getchar();
+                                    int line,pos;
+                                    scanf("%d:%d",&line,&pos);
+
+                                          FILE *fp,*temp;
+                                          fp=fopen(path,"r");
+
+                                          if(fp==NULL){
+                                              fclose(fp);
+                                              fp=fopen(path,"w");
+                                              fprintf(fp,"%s",string);
+                                              fclose(fp);
+                                              continue;
+                                          }
+                                          temp=fopen("temp.txt","w");
+                                          char firstcopy;
+                                          firstcopy=fgetc(fp);
+                                          while(firstcopy!=EOF){
+                                             fputc(firstcopy,temp);
+                                             firstcopy=fgetc(fp);
+                                          }
+                                          fclose(temp);
+                                          fclose(fp);
+
+                                                fp=fopen(path,"w");
+                                                temp=fopen("temp.txt","r");
+                                                char buffer[500];
+                                                for(int i=1;i<line;i++){
+                                                    fgets(buffer,500,temp);
+                                                    fputs(buffer,fp);
+                                                }
+                                                for(int i=0;i<pos;i++){
+                                                    char c;
+                                                    c=fgetc(temp);
+                                                    fputc(c,fp);
+                                                }
+                                                fputs(string,fp);
+
+                                                char secondcopy;
+                                                secondcopy=fgetc(temp);
+                                                while(secondcopy!=EOF){
+                                                    fputc(secondcopy,fp);
+                                                    secondcopy=fgetc(temp);
+                                                }
+                                                fclose(fp);
+                                                fclose(temp);
+                                                remove(temp);
+                           }
+            }
+
+        }else{printf("Invalid command\n");}
 
     }else
     if(strcmp(command,"exit")==0){
