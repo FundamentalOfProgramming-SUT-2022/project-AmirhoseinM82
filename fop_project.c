@@ -5,7 +5,105 @@
 #include<sys/stat.h>
 #include<unistd.h>
 
+void removestr(char path[],int line,int pos,int size,char bof){
 
+                   FILE *fp,*temp;
+                   fp=fopen(path,"r");
+                   int curser=0;
+                   int bn=0;
+                   while(bn!=line-1){
+
+                        char c;
+                        c=fgetc(fp);
+                        if(c=='\n') bn++;
+                        curser++;
+
+                   }
+                   curser+=pos;
+                   fclose(fp);
+                   fp=fopen(path,"r");
+                   temp=fopen("temp.txt","w");
+                   if(bof=='b'){
+                      char c;
+                      for(int i=0;i<curser-size;i++){
+                          c=fgetc(fp);
+                          fputc(c,temp);
+                      }
+                      fseek(fp,curser+1,SEEK_SET);
+                      c=fgetc(fp);
+                      while(c!=EOF){
+                         fputc(c,temp);
+                         c=fgetc(fp);
+                      }
+                      fclose(fp);
+                      fclose(temp);
+                   }else{
+                      char c;
+                      for(int i=0;i<curser;i++){
+                          c=fgetc(fp);
+                          fputc(c,temp);
+                      }
+                      fseek(fp,curser+size+line-1,SEEK_SET);
+                      c=fgetc(fp);
+                      while(c!=EOF){
+                         fputc(c,temp);
+                         c=fgetc(fp);
+                      }
+                      fclose(fp);
+                      fclose(temp);
+                   }
+
+                   fp=fopen(path,"w");
+                   temp=fopen("temp.txt","r");
+                   char copy;
+                   copy=fgetc(temp);
+                   while(copy!=EOF){
+                     fputc(copy,fp);
+                     copy=fgetc(temp);
+                   }
+                   fclose(fp);
+                   fclose(temp);
+                   remove("temp.txt");
+
+}
+
+void copystr(char path[],int line,int pos,int size,char bof){
+
+                  FILE *fp,*clipboard;
+                  fp=fopen(path,"r");
+                  clipboard=fopen("clipboard.txt","w");
+
+                  int curser=0;
+                  int bn=0;
+                  while(bn!=line-1){
+                        char c;
+                        c=fgetc(fp);
+                        if(c=='\n') bn++;
+                        curser++;
+                  }
+                  curser+=pos;
+
+                  if(bof=='b'){
+                      fseek(fp,curser-size,SEEK_SET);
+                      char co;
+                      for(int i=0;i<size;i++){
+                          co=fgetc(fp);
+                          fputc(co,clipboard);
+                      }
+                      fclose(fp);
+                      fclose(clipboard);
+                  }else
+                  if(bof=='f'){
+                      fseek(fp,curser+line-1,SEEK_SET);
+                      char co;
+                      for(int i=0;i<size;i++){
+                          co=fgetc(fp);
+                          fputc(co,clipboard);
+                      }
+                      fclose(fp);
+                      fclose(clipboard);
+                  }
+}
 
 
 int main(){
@@ -114,7 +212,7 @@ int main(){
 
 
                            for(int i=0;i<6;i++) getchar();
-                           char string[500];
+                           char string[2048];
                            char s;
                            if((s=getchar())=='"'){
                                int j=0;
@@ -122,6 +220,9 @@ int main(){
                                while(1){
                                   char a,b,c;
                                   a=getchar();
+                                  if(a=='"'){
+                                    break;
+                                  }
                                   if(a=='\\'){
                                      b=getchar();
                                      if(b=='\\'){
@@ -129,39 +230,22 @@ int main(){
                                         j++;
                                         string[j]=getchar();
                                         j++;
-                                     }else{
+                                     }else if(b=='n'){
                                         string[j]='\n';
                                         j++;
-                                     }
-                                  }else
-                                  if(a=='"'){
-                                     b=getchar();
-                                     if(b==' '){
-                                          c=getchar();
-                                          if(c=='-'){
-                                             break;
-                                          }else{
-                                            string[j]='"';
-                                            j++;
-                                            string[j]=' ';
-                                            j++;
-                                            string[j]=c;
-                                            j++;
-                                          }
-                                     }
-                                     else{
+                                     }else if(b=='"'){
                                         string[j]='"';
                                         j++;
-                                        string[j]=b;
-                                        j++;
                                      }
-                                  }else if(a!='\\' && a!='"'){
+                                  }else {
                                   string[j]=a;
                                   j++;
                                   }
                                }
 
                                string[j]='\0';
+                               getchar();
+                               getchar();
                            }else{
                                int j=0;
                                char a,b;
@@ -206,9 +290,9 @@ int main(){
                                           fclose(fp);
                                                 fp=fopen(path,"w");
                                                 temp=fopen("temp.txt","r");
-                                                char buffer[500];
+                                                char buffer[1000];
                                                 for(int i=1;i<line;i++){
-                                                    fgets(buffer,500,temp);
+                                                    fgets(buffer,1000,temp);
                                                     fputs(buffer,fp);
                                                 }
 
@@ -231,6 +315,237 @@ int main(){
 
         }else{printf("Invalid command\n");}
 
+    }else
+    if(strcmp(command,"cat")==0){
+         char f[7];
+         scanf("%s",f);
+         getchar();
+             if(strcmp(f,"--file")==0){
+
+                   char path[200];
+                   char c;
+                   if((c=getchar())=='"'){
+                        getchar();
+                        int i=0;
+                        while((c=getchar())!='"'){
+                             path[i]=c;
+                             i++;
+                        }
+                        path[i]='\0';
+            }else{
+                    int i=0;
+                    while((c=getchar())!='\n'){
+                        path[i]=c;
+                        i++;
+                    }
+                    path[i]='\0';
+            }
+
+                 char buffer[2048];
+
+                 FILE *fp;
+                 fp=fopen(path,"r");
+                 if(fp==NULL){
+                    printf("File not found\n");
+                    continue;
+                 }
+                 int i=0;
+                 char character;
+                 character=fgetc(fp);
+                 while(character!=EOF){
+                    buffer[i]=character;
+                    i++;
+                    character=fgetc(fp);
+                 }
+                 fclose(fp);
+                 for(int j=0;j<i;j++){
+                    printf("%c",buffer[j]);
+                 }
+                 printf("\n");
+
+             }else{printf("Invalid command\n");}
+
+    }else
+    if(strcmp(command,"removestr")==0){
+
+         char f[7];
+         scanf("%s",f);
+         getchar();
+             if(strcmp(f,"--file")==0){
+
+                   char path[200];
+                   char c;
+                   if((c=getchar())=='"'){
+                        getchar();
+                        int i=0;
+                        while((c=getchar())!='"'){
+                             path[i]=c;
+                             i++;
+                        }
+                        path[i]='\0';
+                        getchar();
+                   }else{
+                        int i=0;
+                        while((c=getchar())!=' '){
+                             path[i]=c;
+                             i++;
+                        }
+                        path[i]='\0';
+                   }
+
+                   for(int i=0;i<6;i++) getchar();
+                   int line,pos;
+                   scanf("%d:%d",&line,&pos);
+                   for(int i=0;i<7;i++) getchar();
+                   int size;
+                   scanf("%d",&size);
+                   char bof;
+                   getchar();
+                   getchar();
+                   bof=getchar();
+                   if(bof!='b' && bof!='f'){
+                    printf("invalid direction\n");
+                    continue;
+                   }
+
+                   removestr(path,line,pos,size,bof);
+
+             }else{printf("Invalid command\n");}
+    }else
+    if(strcmp(command,"copystr")==0 || strcmp(command,"cutstr")==0){
+         char f[7];
+         scanf("%s",f);
+         getchar();
+             if(strcmp(f,"--file")==0){
+
+                   char path[200];
+                   char c;
+                   if((c=getchar())=='"'){
+                        getchar();
+                        int i=0;
+                        while((c=getchar())!='"'){
+                             path[i]=c;
+                             i++;
+                        }
+                        path[i]='\0';
+                        getchar();
+                   }else{
+                        int i=0;
+                        while((c=getchar())!=' '){
+                             path[i]=c;
+                             i++;
+                        }
+                        path[i]='\0';
+                   }
+
+                   for(int i=0;i<6;i++) getchar();
+                   int line,pos;
+                   scanf("%d:%d",&line,&pos);
+                   for(int i=0;i<7;i++) getchar();
+                   int size;
+                   scanf("%d",&size);
+                   char bof;
+                   getchar();
+                   getchar();
+                   bof=getchar();
+                   if(bof!='b' && bof!='f'){
+                    printf("invalid direction\n");
+                    continue;
+                   }
+
+
+                        if(strcmp(command,"copystr")==0){
+                            copystr(path,line,pos,size,bof);
+                        }else
+                        if(strcmp(command,"cutstr")==0){
+                            copystr(path,line,pos,size,bof);
+                            removestr(path,line,pos,size,bof);
+                        }
+
+
+             }else{printf("Invalid command\n");}
+
+    }else
+    if(strcmp(command,"pastestr")==0){
+
+         char f[7];
+         scanf("%s",f);
+         getchar();
+             if(strcmp(f,"--file")==0){
+
+                   char path[200];
+                   char c;
+                   if((c=getchar())=='"'){
+                        getchar();
+                        int i=0;
+                        while((c=getchar())!='"'){
+                             path[i]=c;
+                             i++;
+                        }
+                        path[i]='\0';
+                        getchar();
+                   }else{
+                        int i=0;
+                        while((c=getchar())!=' '){
+                             path[i]=c;
+                             i++;
+                        }
+                        path[i]='\0';
+                   }
+
+                   for(int i=0;i<6;i++) getchar();
+                   int line,pos;
+                   scanf("%d:%d",&line,&pos);
+
+                   FILE *fp,*temp,*clipboard;
+                   fp=fopen(path,"r");
+                   clipboard=fopen("clipboard.txt","r");
+                   temp=fopen("temp.txt","w");
+                   char buffer[1000];
+                   for(int i=1;i<line;i++){
+                       fgets(buffer,1000,fp);
+                       fputs(buffer,temp);
+
+                   }
+                   char co;
+                   for(int i=0;i<pos;i++){
+                       co=fgetc(fp);
+                       fputc(co,temp);
+
+                   }
+                   char co1;
+                   co1=fgetc(clipboard);
+                   while(co1!=EOF){
+                       fputc(co1,temp);
+                       co1=fgetc(clipboard);
+
+                   }
+
+                   char co3;
+                   co3=fgetc(fp);
+                   while(co3!=EOF){
+                       fputc(co3,temp);
+                       co3=fgetc(fp);
+                   }
+
+                   fclose(temp);
+                   fclose(fp);
+                   fclose(clipboard);
+
+                   fp=fopen(path,"w");
+                   temp=fopen("temp.txt","r");
+                   char co2;
+                   co2=fgetc(temp);
+                   while(co2!=EOF){
+                       fputc(co2,fp);
+                       co2=fgetc(temp);
+
+                   }
+                   fclose(fp);
+                   fclose(temp);
+                   remove("temp.txt");
+
+             }else{printf("Invalid command\n");}
     }else
     if(strcmp(command,"exit")==0){
         return 0;
