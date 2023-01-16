@@ -105,6 +105,230 @@ void copystr(char path[],int line,int pos,int size,char bof){
                   }
 }
 
+void find(char path[],char string[],int *t,int v[],int jai[]){
+
+            int jaighah[20];
+            int vajeh[20];
+            int tedad_yaft=0;
+
+            if(string[0]=='*'){
+               FILE *fp;
+               fp=fopen(path,"r");
+
+               char c;
+               int v=0,j=0,bn=0;
+               int tedadva=1;
+               c=fgetc(fp);
+               int i=1;
+               while(c!=EOF){
+
+                      if(c==string[i]){
+                      i++;
+                      int cursor=ftell(fp);
+                      int words=tedadva;
+                      char s;
+                      int compare=0;
+                           while(string[i]!='\0'){
+
+                                if(string[i-1]!='*' || (string[i]!=' ' && string[i]!='\n')){
+                                   s=fgetc(fp);
+                                }
+
+                                if(s==' ' || s=='\n') tedadva++;
+                                if(s=='\n') bn++;
+
+                                if(s!=string[i]){
+                                     compare=1;
+                                     c=s;
+                                     break;
+                                }else{
+                                     i++;
+                                }
+
+                               if(string[i]=='*' && (string[i+1]=='\0' || string[i+1]=='\n' || string[i+1]==' ')){
+                                     while(s!=' ' && s!='\n' && s!=EOF){
+                                          s=fgetc(fp);
+                                          if(s==' ' || s=='\n') tedadva++;
+                                          if(s=='\n') bn++;
+                                     }
+                                     i++;
+                               }
+
+                              if(string[i]=='*' && (string[i-1]=='\n' || string[i-1]==' ')){
+                                     i++;
+                                     s=fgetc(fp);
+                                     if(s==' ' || s=='\n') tedadva++;
+                                     if(s=='\n') bn++;
+
+                                     while(s!=string[i] && s!=' ' && s!='\n' && s!=EOF){
+                                          s=fgetc(fp);
+                                          if(s==' ' || s=='\n') tedadva++;
+                                          if(s=='\n') bn++;
+                                    }
+
+                             if(s==' ' || s=='\n' || s==EOF){
+                                  compare=1;
+                                  c=s;
+                                  break;
+                            }else{
+                                  i++;
+                            }
+
+                            }
+                       }
+
+                        if(string[i]=='\0'){
+
+                             if(string[i-1]=='*'){
+
+                             }else{
+
+                                c=fgetc(fp);
+
+                                if(c==' ' || c=='\n' || c==EOF){
+                                tedadva++;
+                                if(c=='\n') bn++;
+
+                                }else{
+                                compare=1;
+                                }
+                             }
+                       }
+
+                           if(compare==0){
+                               jaighah[j]=cursor-(bn+1)*1+1;
+                               j++;
+                               vajeh[v]=words;
+                               v++;
+                           }
+
+                }
+                         c=fgetc(fp);
+                         if(c==' ' || c=='\n') tedadva++;
+                         if(c=='\n') bn++;
+
+                    i=1;
+
+              }
+
+                  tedad_yaft=j;
+
+              }else{
+                     FILE *fp;
+                     fp=fopen(path,"r");
+
+                     int v=0,j=0,bn=0;
+                     int tedadva=1;
+                     char c;
+                     c=fgetc(fp);
+                     int i=0;
+                while(c!=EOF){
+                        if(c==string[i]){
+                                i++;
+                                int cursor=ftell(fp);
+                                int words=tedadva;
+                                char s;
+                                int compare=0;
+                           while(string[i]!='\0'){
+
+                                if(string[i-1]!='*' || (string[i]!=' ' && string[i]!='\n')){
+                                   s=fgetc(fp);
+                                }
+
+                                if(s==' ' || s=='\n') tedadva++;
+                                if(s=='\n') bn++;
+
+                                if(s!=string[i]){
+                                     compare=1;
+                                     c=s;
+                                     break;
+                                }else{
+                                     i++;
+                                }
+
+                               if(string[i]=='*' && (string[i+1]=='\0' || string[i+1]=='\n' || string[i+1]==' ')){
+                                     while(s!=' ' && s!='\n' && s!=EOF){
+                                          s=fgetc(fp);
+                                          if(s==' ' || s=='\n') tedadva++;
+                                          if(s=='\n') bn++;
+                                     }
+                                     i++;
+                               }
+
+                              if(string[i]=='*' && (string[i-1]=='\n' || string[i-1]==' ')){
+                                     i++;
+                                     s=fgetc(fp);
+                                     if(s==' ' || s=='\n') tedadva++;
+                                     if(s=='\n') bn++;
+
+                                     while(s!=string[i] && s!=' ' && s!='\n' && s!=EOF){
+                                          s=fgetc(fp);
+                                          if(s==' ' || s=='\n') tedadva++;
+                                          if(s=='\n') bn++;
+                                    }
+
+                             if(s==' ' || s=='\n' || s==EOF){
+                                  compare=1;
+                                  c=s;
+                                  break;
+                            }else{
+                                  i++;
+                            }
+
+                            }
+                       }
+
+                        if(string[i]=='\0'){
+
+                             if(string[i-1]=='*'){
+
+                             }else{
+
+                                c=fgetc(fp);
+
+                                if(c==' ' || c=='\n' || c==EOF){
+                                //tedadva++;
+                                //if(c=='\n') bn++;
+
+                                }else{
+                                compare=1;
+                                }
+                             }
+                       }
+
+                           if(compare==0){
+                               jaighah[j]=cursor-(bn+1)*1+1;
+                               j++;
+                               vajeh[v]=words;
+                               v++;
+                           }
+
+                }
+
+                    while(c!=' ' && c!='\n' && c!=EOF) c=fgetc(fp);
+                         if(c==' ' || c=='\n') tedadva++;
+                         if(c=='\n') bn++;
+                    if(c!=EOF) c=fgetc(fp);
+
+                i=0;
+
+
+            }
+
+
+
+                  tedad_yaft=j;
+        }
+
+        *t=tedad_yaft;
+        for(int i=0;i<tedad_yaft;i++){
+            v[i]=vajeh[i];
+        }
+        for(int i=0;i<tedad_yaft;i++){
+            jai[i]=jaighah[i];
+        }
+}
+
 
 int main(){
 
@@ -680,7 +904,7 @@ int main(){
 
 
             if(c=='\n'){
-                printf("%d %d %d %d %d %s %s\n",count,at,atn,byword,all,string,path);
+
             }else{
                 char dastoor[50];
                 gets(dastoor);
@@ -698,7 +922,7 @@ int main(){
                     }
                     k++;
                 }
-               printf("%d %d %d %d %d %s %s\n",count,at,atn,byword,all,string,path);
+
             }
 
             FILE *fp;
@@ -710,269 +934,394 @@ int main(){
                 continue;
             }
 
-            int jaighah[20];
-            int vajeh[20];
-            int tedad_yaft=0;
-
-            if(string[0]=='*'){
-               FILE *fp;
-               fp=fopen(path,"r");
-
-               char c;
-               int v=0,j=0,bn=0;
-               int tedadva=1;
-               c=fgetc(fp);
-               int i=1;
-               while(c!=EOF){
-
-                      if(c==string[i]){
-                      i++;
-                      int cursor=ftell(fp);
-                      int words=tedadva;
-                      char s;
-                      int compare=0;
-                           while(string[i]!='\0'){
-
-                                if(string[i-1]!='*' || (string[i]!=' ' && string[i]!='\n')){
-                                   s=fgetc(fp);
-                                }
-
-                                if(s==' ' || s=='\n') tedadva++;
-                                if(s=='\n') bn++;
-
-                                if(s!=string[i]){
-                                     compare=1;
-                                     c=s;
-                                     break;
-                                }else{
-                                     i++;
-                                }
-
-                               if(string[i]=='*' && (string[i+1]=='\0' || string[i+1]=='\n' || string[i+1]==' ')){
-                                     while(s!=' ' && s!='\n' && s!=EOF){
-                                          s=fgetc(fp);
-                                          if(s==' ' || s=='\n') tedadva++;
-                                          if(s=='\n') bn++;
-                                     }
-                                     i++;
-                               }
-
-                              if(string[i]=='*' && (string[i-1]=='\n' || string[i-1]==' ')){
-                                     i++;
-                                     s=fgetc(fp);
-                                     if(s==' ' || s=='\n') tedadva++;
-                                     if(s=='\n') bn++;
-
-                                     while(s!=string[i] && s!=' ' && s!='\n' && s!=EOF){
-                                          s=fgetc(fp);
-                                          if(s==' ' || s=='\n') tedadva++;
-                                          if(s=='\n') bn++;
-                                    }
-
-                             if(s==' ' || s=='\n' || s==EOF){
-                                  compare=1;
-                                  c=s;
-                                  break;
-                            }else{
-                                  i++;
-                            }
-
-                            }
-                       }
-
-                        if(string[i]=='\0'){
-
-                             if(string[i-1]=='*'){
-
-                             }else{
-
-                                c=fgetc(fp);
-
-                                if(c==' ' || c=='\n' || c==EOF){
-                                tedadva++;
-                                if(c=='\n') bn++;
-
-                                }else{
-                                compare=1;
-                                }
-                             }
-                       }
-
-                           if(compare==0){
-                               jaighah[j]=cursor-(bn+1)*1+1;
-                               j++;
-                               vajeh[v]=words;
-                               v++;
-                           }
-
-                }else{
-                         c=fgetc(fp);
-                         if(c==' ' || c=='\n') tedadva++;
-                         if(c=='\n') bn++;
-                     }
-                    i=1;
-
-              }
-
-                  tedad_yaft=j;
-
-              }else{
-                     FILE *fp;
-                     fp=fopen(path,"r");
-
-                     int v=0,j=0,bn=0;
-                     int tedadva=1;
-                     char c;
-                     c=fgetc(fp);
-                     int i=0;
-                while(c!=EOF){
-                        if(c==string[i]){
-                                i++;
-                                int cursor=ftell(fp);
-                                int words=tedadva;
-                                char s;
-                                int compare=0;
-                           while(string[i]!='\0'){
-
-                                if(string[i-1]!='*' || (string[i]!=' ' && string[i]!='\n')){
-                                   s=fgetc(fp);
-                                }
-
-                                if(s==' ' || s=='\n') tedadva++;
-                                if(s=='\n') bn++;
-
-                                if(s!=string[i]){
-                                     compare=1;
-                                     c=s;
-                                     break;
-                                }else{
-                                     i++;
-                                }
-
-                               if(string[i]=='*' && (string[i+1]=='\0' || string[i+1]=='\n' || string[i+1]==' ')){
-                                     while(s!=' ' && s!='\n' && s!=EOF){
-                                          s=fgetc(fp);
-                                          if(s==' ' || s=='\n') tedadva++;
-                                          if(s=='\n') bn++;
-                                     }
-                                     i++;
-                               }
-
-                              if(string[i]=='*' && (string[i-1]=='\n' || string[i-1]==' ')){
-                                     i++;
-                                     s=fgetc(fp);
-                                     if(s==' ' || s=='\n') tedadva++;
-                                     if(s=='\n') bn++;
-
-                                     while(s!=string[i] && s!=' ' && s!='\n' && s!=EOF){
-                                          s=fgetc(fp);
-                                          if(s==' ' || s=='\n') tedadva++;
-                                          if(s=='\n') bn++;
-                                    }
-
-                             if(s==' ' || s=='\n' || s==EOF){
-                                  compare=1;
-                                  c=s;
-                                  break;
-                            }else{
-                                  i++;
-                            }
-
-                            }
-                       }
-
-                        if(string[i]=='\0'){
-
-                             if(string[i-1]=='*'){
-
-                             }else{
-
-                                c=fgetc(fp);
-
-                                if(c==' ' || c=='\n' || c==EOF){
-                                tedadva++;
-                                if(c=='\n') bn++;
-
-                                }else{
-                                compare=1;
-                                }
-                             }
-                       }
-
-                           if(compare==0){
-                               jaighah[j]=cursor-(bn+1)*1+1;
-                               j++;
-                               vajeh[v]=words;
-                               v++;
-                           }
-
-                }else{
-
-                    while(c!=' ' && c!='\n' && c!=EOF) c=fgetc(fp);
-                         if(c==' ' || c=='\n') tedadva++;
-                         if(c=='\n') bn++;
-                    if(c!=EOF) c=fgetc(fp);
-                }
-                i=0;
 
 
-            }
+        int t;
+        int v[20];
+        int jai[20];
 
-
-
-                  tedad_yaft=j;
-        }
+        find(path,string,&t,v,jai);
 
             if(all==1 && byword==1 && count==0 && at==0){
-                if(tedad_yaft==0){
+                if(t==0){
                     printf("not found\n");
                 }else{
-                    for(int i=0;i<tedad_yaft;i++){
-                        printf("%d ",vajeh[i]);
+                    for(int i=0;i<t;i++){
+                        printf("%d ",v[i]);
                     }
                     printf("\n");
                 }
             }else
             if(all==1 && byword==0 && count==0 && at==0){
-                if(tedad_yaft==0){
+                if(t==0){
                     printf("not found\n");
                 }else{
-                    for(int i=0;i<tedad_yaft;i++){
-                       printf("%d ",jaighah[i]);
+                    for(int i=0;i<t;i++){
+                       printf("%d ",jai[i]);
                     }
                     printf("\n");
                 }
             }else
             if(all==0 && byword==0 && count==1 && at==0){
-                if(tedad_yaft==0){
+                if(t==0){
                     printf("not found\n");
                 }else{
-                    printf("%d\n",tedad_yaft);
+                    printf("%d\n",t);
                 }
             }else
             if(all==0 && byword==0 && count==0 && at==1){
-                if(tedad_yaft<atn){
+                if(t<atn){
                     printf("not found\n");
                 }else{
-                    printf("%d\n",jaighah[atn]);
+                    printf("%d\n",jai[atn]);
                 }
             }else
             if(all==0 && byword==1 && count==0 && at==0){
-                if(tedad_yaft==0){
+                if(t==0){
                     printf("not found\n");
                 }else{
-                    printf("%d\n",vajeh[0]);
+                    printf("%d\n",v[0]);
                 }
             }else
             if(all==0 && byword==0 && count==0 && at==0){
 
-               if(tedad_yaft==0){
+               if(t==0){
                     printf("not found\n");
                 }else{
-                    printf("%d\n",jaighah[0]);
+                    printf("%d\n",*(jai));
                 }
 
             }else{printf("invalid combination of attributes\n");}
+
+
+
+
+    }else
+    if(strcmp(command,"replace")==0){
+
+        for(int i=0;i<8;i++) getchar();
+         char string1[200];
+         char s1;
+         int tedad1;
+         if((s1=getchar())=='"'){
+             int i=0;
+             while(1){
+                char a,b;
+                a=getchar();
+                if(a=='\\'){
+                    b=getchar();
+                    if(b=='n'){
+                        string1[i]='\n';
+                        i++;
+                    }else
+                    if(b=='"'){
+                        string1[i]='"';
+                        i++;
+                    }else
+                    if(b=='\\'){
+                        string1[i]='\\';
+                        i++;
+                        string1[i]=getchar();
+                        i++;
+                    }else
+                    {
+                       string1[i]=b;
+                       i++;
+                    }
+                }else
+                if(a=='"'){
+                    getchar();
+                        break;
+                }else{
+                string1[i]=a;
+                i++;
+                }
+
+             }
+             string1[i]='\0';
+             tedad1=i;
+         }else{
+              int i=0;
+              string1[i]=s1;
+              i++;
+              char a;
+              while((a=getchar())!=' '){
+                  string1[i]=a;
+                  i++;
+              }
+              string1[i]='\0';
+              tedad1=i;
+         }
+
+         for(int i=0;i<7;i++) getchar();
+         char string2[200];
+         char s2;
+         int tedad2;
+         if((s2=getchar())=='"'){
+             int i=0;
+             while(1){
+                char a,b;
+                a=getchar();
+                if(a=='\\'){
+                    b=getchar();
+                    if(b=='n'){
+                        string2[i]='\n';
+                        i++;
+                    }else
+                    if(b=='"'){
+                        string2[i]='"';
+                        i++;
+                    }else
+                    if(b=='\\'){
+                        string2[i]='\\';
+                        i++;
+                        string2[i]=getchar();
+                        i++;
+                    }else
+                    {
+                       string2[i]=b;
+                       i++;
+                    }
+                }else
+                if(a=='"'){
+                    getchar();
+                        break;
+                }else{
+                string2[i]=a;
+                i++;
+                }
+
+             }
+             string2[i]='\0';
+             tedad2=i;
+         }else{
+              int i=0;
+              string2[i]=s2;
+              i++;
+              char a;
+              while((a=getchar())!=' '){
+                  string2[i]=a;
+                  i++;
+              }
+              string2[i]='\0';
+              tedad2=i;
+         }
+
+         for(int i=0;i<7;i++) getchar();
+             char path[200];
+             char c;
+             if((c=getchar())=='"'){
+                    getchar();
+                    int i=0;
+                    while((c=getchar())!='"'){
+                        path[i]=c;
+                        i++;
+                    }
+                        path[i]='\0';
+                    c=getchar();
+
+            }else{
+                    int i=0;
+                    c=getchar();
+                    while(c!=' ' && c!='\n'){
+                        path[i]=c;
+                        i++;
+                        c=getchar();
+                    }
+                        path[i]='\0';
+            }
+
+            int at=0,atn=1,all=0;
+
+
+            if(c=='\n'){
+
+            }else{
+                char dastoor[50];
+                gets(dastoor);
+
+                int k=0;
+                while(dastoor[k]!='\0'){
+                    if(dastoor[k]=='-'){
+                        if(dastoor[k+2]=='t'){
+                            at=1;
+                            atn=dastoor[k+4]-'0';
+                        }
+                        if(dastoor[k+2]=='l') all=1;
+                    }
+                    k++;
+                }
+
+            }
+
+            int t;
+            int v[20];
+            int jai[20];
+
+            find(path,string1,&t,v,jai);
+
+
+            int fasele=0;
+            for(int i=0;i<strlen(string1);i++){
+                if(string1[i]==' ' || string1[i]=='\n') fasele++;
+            }
+
+            if(all==1 && at==0){
+                if(t==0) printf("not found str1\n");
+                else
+                {
+                  FILE *fp,*temp;
+                  fp=fopen(path,"r");
+                  temp=fopen("temp.txt","w");
+
+                  int i=0;
+                  int space=0;
+                        while(1){
+                            char c;
+                            c=fgetc(fp);
+                            if(c==EOF){
+                               break;
+                            }
+                            fputc(c,temp);
+
+                            if(c==' ' || c=='\n') space++;
+                            if(i<t){
+                            if(space==v[i]-1){
+                               char x;
+                               for(int i=0;i<=fasele;){
+                                  x=fgetc(fp);
+                                  if(x==' ' || x=='\n') i++;
+                                  if(x==EOF) break;
+                               }
+                               space+=fasele+1;
+                               fputs(string2,temp);
+                               if(x==EOF) break;
+                               fputc(x,temp);
+                               i++;
+                            }
+                            }
+                        }
+                  fclose(temp);
+                  fclose(fp);
+                  fp=fopen(path,"w");
+                  temp=fopen("temp.txt","r");
+
+                  char c;
+                  c=fgetc(temp);
+                  while(c!=EOF){
+                    fputc(c,fp);
+                    c=fgetc(temp);
+                  }
+                  fclose(fp);
+                  fclose(temp);
+                  remove("temp.txt");
+                }
+
+            }else
+            if(all==0 && at==1){
+                if(t==0) printf("not found str1\n");
+                else if(atn>t) printf("not found str1 at this pos\n");
+                else
+                {
+                  FILE *fp,*temp;
+                  fp=fopen(path,"r");
+                  temp=fopen("temp.txt","w");
+
+                  int i=0;
+                  int space=0;
+                        while(1){
+                            char c;
+                            c=fgetc(fp);
+                            if(c==EOF){
+                               break;
+                            }
+                            fputc(c,temp);
+
+                            if(c==' ' || c=='\n') space++;
+
+                            if(space==v[atn-1]-1){
+                               char x;
+                               for(int i=0;i<=fasele;){
+                                  x=fgetc(fp);
+                                  if(x==' ' || x=='\n') i++;
+                                  if(x==EOF) break;
+                               }
+                               space+=fasele+1;
+                               fputs(string2,temp);
+                               if(x==EOF) break;
+                               fputc(x,temp);
+
+                            }
+
+                        }
+                  fclose(temp);
+                  fclose(fp);
+                  fp=fopen(path,"w");
+                  temp=fopen("temp.txt","r");
+
+                  char c;
+                  c=fgetc(temp);
+                  while(c!=EOF){
+                    fputc(c,fp);
+                    c=fgetc(temp);
+                  }
+                  fclose(fp);
+                  fclose(temp);
+                  remove("temp.txt");
+                }
+
+            }else
+            if(all==0 && at==0){
+                if(t==0) printf("not found str1\n");
+                else
+                {
+                  FILE *fp,*temp;
+                  fp=fopen(path,"r");
+                  temp=fopen("temp.txt","w");
+
+                  int i=0;
+                  int space=0;
+                        while(1){
+                            char c;
+                            c=fgetc(fp);
+                            if(c==EOF){
+                               break;
+                            }
+                            fputc(c,temp);
+
+                            if(c==' ' || c=='\n') space++;
+
+                            if(space==v[0]-1){
+                               char x;
+                               for(int i=0;i<=fasele;){
+                                  x=fgetc(fp);
+                                  if(x==' ' || x=='\n') i++;
+                                  if(x==EOF) break;
+                               }
+                               space+=fasele+1;
+                               fputs(string2,temp);
+                               if(x==EOF) break;
+                               fputc(x,temp);
+
+                            }
+
+                        }
+                  fclose(temp);
+                  fclose(fp);
+                  fp=fopen(path,"w");
+                  temp=fopen("temp.txt","r");
+
+                  char c;
+                  c=fgetc(temp);
+                  while(c!=EOF){
+                    fputc(c,fp);
+                    c=fgetc(temp);
+                  }
+                  fclose(fp);
+                  fclose(temp);
+                  remove("temp.txt");
+                }
+            }
 
 
 
