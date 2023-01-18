@@ -1327,6 +1327,165 @@ int main(){
 
 
     }else
+    if(strcmp(command,"grep")==0){
+
+          getchar();
+          getchar();
+          char opt;
+          char option='0';
+          opt=getchar();
+          if(opt=='c'){
+                option='c';
+                for(int i=0;i<7;i++) getchar();
+          }else
+          if(opt=='i'){
+                option='i';
+                for(int i=0;i<7;i++) getchar();
+          }
+          else{
+                for(int i=0;i<4;i++) getchar();
+          }
+
+
+          char string[200];
+          char s;
+          if((s=getchar())=='"'){
+                    int j=0;
+
+                    while(1){
+                        char a,b,c;
+                        a=getchar();
+                        if(a=='"'){
+                            break;
+                        }
+                        if(a=='\\'){
+                             b=getchar();
+                             if(b=='\\'){
+                                 string[j]='\\';
+                                 j++;
+                                 string[j]=getchar();
+                                 j++;
+                             }else if(b=='n'){
+                                 string[j]='\n';
+                                 j++;
+                             }else if(b=='"'){
+                                 string[j]='"';
+                                 j++;
+                             }
+                        }else {
+                            string[j]=a;
+                            j++;
+                        }
+                    }
+                    string[j]='\0';
+                    getchar();
+            }else{
+                               int j=0;
+                               char a,b;
+                               string[j]=s;
+                               j++;
+                               while((a=getchar())!=' '){
+                                  if(a=='\\'){
+                                    b=getchar();
+                                    if(b=='\\'){
+                                        string[j]='\\';
+                                        j++;
+                                        string[j]=getchar();
+                                        j++;
+                                    }else{
+                                        string[j]='\n';
+                                        j++;
+                                    }
+                                  }
+                                  string[j]=a;
+                                  j++;
+                               }
+                               string[j]='\0';
+
+            }
+
+            for(int i=0;i<8;i++) getchar();
+
+            struct GREP {
+                 char file[50];
+                 char sentence[1000];
+            } ;
+
+            struct GREP g[20];
+            int i=0;
+                   while(1){
+                       char path[200];
+                       char c;
+                       char s;
+                       if((c=getchar())=='"'){
+                           getchar();
+                           int i=0;
+                           while((c=getchar())!='"'){
+                              path[i]=c;
+                              i++;
+                           }
+                           path[i]='\0';
+                          s=getchar();
+                       }else{
+                           int i=0;
+                           while(c!=' ' && c!='\n'){
+                               c=getchar();
+                               if(c==' ' || c=='\n') break;
+                               path[i]=c;
+                               i++;
+                           }
+                           s=c;
+                           path[i]='\0';
+                       }
+
+                            FILE *fp;
+                            fp=fopen(path,"r");
+                            if(fp==NULL){
+                                printf("file does not exist\n");
+                                break;
+                            }
+
+                            char jomle[1000];
+                            char x;
+                            while(1){
+                               x=fgetc(fp);
+                               int k=0;
+                               while(x!='\n' && x!=EOF){
+                                   jomle[k]=x;
+                                   x=fgetc(fp);
+                                   k++;
+                               }
+                               jomle[k]='\0';
+                               char *p=strstr(jomle,string);
+                               if(p){
+                                   strcpy(g[i].file,path);
+                                   strcpy(g[i].sentence,jomle);
+                                   i++;
+                                }
+                               if(x==EOF) break;
+                            }
+                            fclose(fp);
+                            if(s=='\n') break;
+                   }
+
+                   if(i==0){
+                      printf("not found this pattern\n");
+                      continue;
+                   }
+                   if(option=='c'){
+                       printf("%d\n",i);
+                   }else
+                   if(option=='i'){
+                       for(int j=0;j<i;j++){
+                           printf("%s\n",g[j].file);
+                       }
+                   }else{
+                      for(int j=0;j<i;j++){
+                          printf("%s : %s\n",g[j].file,g[j].sentence);
+                      }
+                   }
+
+    }else
     if(strcmp(command,"exit")==0){
         return 0;
     }
