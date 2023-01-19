@@ -4,6 +4,7 @@
 #include<fcntl.h>
 #include<sys/stat.h>
 #include<unistd.h>
+#include<dirent.h>
 
 void removestr(char path[],int line,int pos,int size,char bof){
 
@@ -327,6 +328,49 @@ void find(char path[],char string[],int *t,int v[],int jai[]){
         for(int i=0;i<tedad_yaft;i++){
             jai[i]=jaighah[i];
         }
+}
+
+void tree(char *basePath,const int root,int depth){
+
+    if(depth==-1){
+
+    }else{
+        if(root==2*(depth+1)){
+            return;
+        }
+    }
+
+    int i;
+    char path[1000];
+    struct dirent *dp;
+    DIR *dir=opendir(basePath);
+
+    if (!dir)
+        return;
+
+    while ((dp = readdir(dir)) != NULL)
+    {
+        if (strcmp(dp->d_name, ".") != 0 && strcmp(dp->d_name, "..") != 0)
+        {
+            for (i=0; i<root; i++)
+            {
+                if (i%2 == 0 || i == 0)
+                    printf("%c", 179);
+                else
+                    printf(" ");
+
+            }
+
+            printf("%c%c%s\n", 195, 196, dp->d_name);
+
+            strcpy(path, basePath);
+            strcat(path, "/");
+            strcat(path, dp->d_name);
+            tree(path,root+2,depth);
+        }
+    }
+
+    closedir(dir);
 }
 
 
@@ -1484,6 +1528,117 @@ int main(){
                           printf("%s : %s\n",g[j].file,g[j].sentence);
                       }
                    }
+
+    }else
+    if(strcmp(command,"compare")==0){
+            getchar();
+            char path1[200];
+                   char c1;
+                   if((c1=getchar())=='"'){
+                        getchar();
+                        int i=0;
+                        while((c1=getchar())!='"'){
+                             path1[i]=c1;
+                             i++;
+                        }
+                        path1[i]='\0';
+            }else{
+                    int i=0;
+                    while((c1=getchar())!=' '){
+                        path1[i]=c1;
+                        i++;
+                    }
+                    path1[i]='\0';
+            }
+
+            char path2[200];
+                   char c2;
+                   if((c2=getchar())=='"'){
+                        getchar();
+                        int i=0;
+                        while((c2=getchar())!='"'){
+                             path2[i]=c2;
+                             i++;
+                        }
+                        path2[i]='\0';
+            }else{
+                    int i=0;
+                    while((c2=getchar())!='\n'){
+                        path2[i]=c2;
+                        i++;
+                    }
+                    path2[i]='\0';
+            }
+
+            FILE *fp1,*fp2;
+            fp1=fopen(path1,"r");
+            fp2=fopen(path2,"r");
+
+            if(fp1==NULL || fp2==NULL){
+                printf("file does not exist\n");
+                continue;
+            }
+
+            char s1,s2;
+            int j=1;
+        while(s1!=EOF && s2!=EOF){
+            char line1[1000];
+            char line2[1000];
+            int i1=0,i2=0;
+
+            s1=fgetc(fp1);
+            while(s1!='\n' && s1!=EOF){
+                line1[i1]=s1;
+                s1=fgetc(fp1);
+                i1++;
+            }
+            line1[i1]='\0';
+            s2=fgetc(fp2);
+            while(s2!='\n' && s2!=EOF){
+                line2[i2]=s2;
+                s2=fgetc(fp2);
+                i2++;
+            }
+            line2[i2]='\0';
+
+            if(strcmp(line1,line2)!=0){
+                printf("========== #%d ==========\n",j);
+                printf("%s\n",line1);
+                printf("%s\n",line2);
+            }
+            j++;
+        }
+
+            if(s1==EOF && s2!=EOF){
+                printf("<<<<<<<<<< %d >>>>>>>>>> content from file2\n",j);
+                char buffer[1000];
+                while(fgets(buffer,1000,fp2)!=NULL){
+                    printf("%s",buffer);
+                }
+                printf("\n");
+            }else
+            if(s1!=EOF && s2==EOF){
+                printf("<<<<<<<<<< #%d-end >>>>>>>>>> content from file1\n",j);
+                char buffer[1000];
+                while(fgets(buffer,1000,fp1)!=NULL){
+                    printf("%s",buffer);
+                }
+                printf("\n");
+            }
+
+
+    }else
+    if(strcmp(command,"tree")==0){
+
+        char path[100];
+        int depth;
+        scanf("%d",&depth);
+        if(depth<-1){
+            printf("invalid depth\n");
+            continue;
+        }
+        scanf("%s", path);
+        tree(path, 0,depth);
 
     }else
     if(strcmp(command,"exit")==0){
