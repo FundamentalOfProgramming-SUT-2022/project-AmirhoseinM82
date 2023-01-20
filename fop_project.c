@@ -1641,6 +1641,130 @@ int main(){
         tree(path, 0,depth);
 
     }else
+    if(strcmp(command,"auto-indent")==0){
+
+            getchar();
+            char path[200];
+            char c;
+            if((c=getchar())=='"'){
+                getchar();
+                int i=0;
+                while((c=getchar())!='"'){
+                    path[i]=c;
+                    i++;
+                }
+                path[i]='\0';
+            }else{
+                int i=0;
+                while((c=getchar())!='\n'){
+                    path[i]=c;
+                    i++;
+                }
+                path[i]='\0';
+            }
+
+            FILE *fp,*temp;
+            fp=fopen(path,"r");
+            temp=fopen("temp.txt","w");
+            int tabs=0;
+
+            char s0=' ',s,bn='\n',tab='\t',sp=' ';
+
+            s0=fgetc(fp);
+            if(s0!='{'){
+               fputc(s0,temp);
+            }else{
+              s=s0;
+              s0=' ';
+            }
+            while(s!=EOF){
+                if(s!='}' && s!='{'){
+                   s=fgetc(fp);
+                }
+                if(s=='{'){
+                  tabs++;
+                    if(s0==' ' || s0=='{'){
+
+                        fputc(s,temp);
+                        fputc(bn,temp);
+                        for(int i=0;i<tabs;i++){
+                            for(int j=0;j<4;j++){
+                                fputc(sp,temp);
+                            }
+                        }
+                    }else{
+
+                        fputc(sp,temp);
+                        fputc(s,temp);
+                        fputc(bn,temp);
+                        for(int i=0;i<tabs;i++){
+                            for(int j=0;j<4;j++){
+                                fputc(sp,temp);
+                            }
+                        }
+                    }
+                  s0=s;
+                  s=fgetc(fp);
+                  while(s==' ' || s=='\n') s=fgetc(fp);
+                  s0=s;
+                  if(s!='{' && s!='}'){
+                     fputc(s,temp);
+                  }
+                  continue;
+                }
+
+                if(s=='}'){
+                    if(s0!='\n') fputc(bn,temp);
+                    tabs--;
+                    for(int i=0;i<tabs;i++){
+                            for(int j=0;j<4;j++){
+                                fputc(sp,temp);
+                            }
+                        }
+                    fputc(s,temp);
+                    fputc(bn,temp);
+                    for(int i=0;i<tabs;i++){
+                            for(int j=0;j<4;j++){
+                                fputc(sp,temp);
+                            }
+                        }
+                    s=fgetc(fp);
+                    while(s==' ' || s=='\n') s=fgetc(fp);
+                    if(s!='}') fputc(s,temp);
+                    continue;
+                }
+
+                fputc(s,temp);
+                if(s=='\n'){
+                    for(int i=0;i<tabs;i++){
+                            for(int j=0;j<4;j++){
+                                fputc(sp,temp);
+                            }
+                        }
+                    while(s=='\n' || s==' ') s=fgetc(fp);
+                    if(s!='{' &&s!='}') fputc(s,temp);
+                }
+
+                s0=s;
+            }
+
+            fclose(fp);
+            fclose(temp);
+
+            fp=fopen(path,"w");
+            temp=fopen("temp.txt","r");
+            char x;
+            x=fgetc(temp);
+            while(x!=EOF){
+                fputc(x,fp);
+                x=fgetc(temp);
+            }
+            fclose(fp);
+            fclose(temp);
+            remove("temp.txt");
+
+
+    }else
     if(strcmp(command,"exit")==0){
         return 0;
     }
