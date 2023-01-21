@@ -30,7 +30,9 @@ void removestr(char path[],int line,int pos,int size,char bof){
                           c=fgetc(fp);
                           fputc(c,temp);
                       }
-                      fseek(fp,size+1,SEEK_CUR);
+                      for(int i=0;i<size;i++){
+                        char x=fgetc(fp);
+                      }
                       c=fgetc(fp);
                       while(c!=EOF){
                          fputc(c,temp);
@@ -44,7 +46,9 @@ void removestr(char path[],int line,int pos,int size,char bof){
                           c=fgetc(fp);
                           fputc(c,temp);
                       }
-                      fseek(fp,curser+size+line-1,SEEK_SET);
+                      for(int i=0;i<size;i++){
+                        char x=fgetc(fp);
+                      }
                       c=fgetc(fp);
                       while(c!=EOF){
                          fputc(c,temp);
@@ -83,9 +87,14 @@ void copystr(char path[],int line,int pos,int size,char bof){
                         curser++;
                   }
                   curser+=pos;
+                  fp=fclose(fp);
+                  fp=fopen(path,"r");
 
                   if(bof=='b'){
-                      fseek(fp,curser-size,SEEK_SET);
+
+                      for(int i=0;i<curser-size;i++){
+                          char x=fgetc(fp);
+                      }
                       char co;
                       for(int i=0;i<size;i++){
                           co=fgetc(fp);
@@ -95,7 +104,10 @@ void copystr(char path[],int line,int pos,int size,char bof){
                       fclose(clipboard);
                   }else
                   if(bof=='f'){
-                      fseek(fp,curser+line-1,SEEK_SET);
+
+                      for(int i=0;i<curser;i++){
+                          char x=fgetc(fp);
+                      }
                       char co;
                       for(int i=0;i<size;i++){
                           co=fgetc(fp);
@@ -605,6 +617,42 @@ int main(){
                                               printf("file does not exist\n");
                                               continue;
                                           }
+
+                                          fp=fopen(path,"r");
+                                          char w;
+                                          int khat=1,caracter=0;
+                                          w=fgetc(fp);
+                                          caracter++;
+                                          int flag=0;
+                                          while(w!=EOF){
+                                               w=fgetc(fp);
+                                               caracter++;
+
+                                               if(w=='\n'){
+                                                    if(khat==line){
+                                                        if(pos>caracter){
+                                                            flag=1;
+                                                        }
+                                                    }
+                                                  khat++;
+                                                  caracter=0;
+                                               }
+                                          }
+                                          fclose(fp);
+                                          if(flag==1){
+                                             printf("invalid position\n");
+                                             continue;
+                                          }
+                                          if(line>khat){
+                                             printf("invalid position\n");
+                                             continue;
+                                          }
+                                          if(pos>caracter && line==khat){
+                                             printf("invalid position\n");
+                                             continue;
+                                          }
+
+
 
                                           char bpath[200];
                                           strcpy(bpath,path);
