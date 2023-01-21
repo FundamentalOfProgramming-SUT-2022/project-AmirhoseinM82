@@ -30,7 +30,7 @@ void removestr(char path[],int line,int pos,int size,char bof){
                           c=fgetc(fp);
                           fputc(c,temp);
                       }
-                      fseek(fp,curser+1,SEEK_SET);
+                      fseek(fp,size+1,SEEK_CUR);
                       c=fgetc(fp);
                       while(c!=EOF){
                          fputc(c,temp);
@@ -404,6 +404,12 @@ int main(){
                            i++;
                         }while(c!='"');
 
+                        if(fp=fopen(path,"r")){
+                            fclose(fp);
+                            printf("file already exists\n");
+                            continue;
+                        }
+
                          int j=0;
                          char path1[200];
 
@@ -417,13 +423,29 @@ int main(){
                                 j++;
                             }
                             path1[j]='\0';
-                            if(fp=fopen(path1,"r")){
-                                fclose(fp);
-                                printf("file exists\n");
-                            }else{
+
                             fp=fopen(path1,"w");
                             fclose(fp);
+
+                        int k=0;
+                        char bpath[200];
+
+                            while(path[k]!='"'){
+                                if(path[k]=='/'){
+                                    bpath[k]='\0';
+                                    mkdir(bpath);
+                                }
+                                if(k==0){
+                                    bpath[k]='t';
+                                    k++;
+                                }
+                                bpath[k]=path[k];
+                                k++;
                             }
+                            bpath[k]='\0';
+
+                            fp=fopen(bpath,"w");
+                            fclose(fp);
 
                    }else{
 
@@ -435,7 +457,13 @@ int main(){
                            i++;
                         }while(c!='\n');
 
-                        int j=0;
+                        if(fp=fopen(path,"r")){
+                            fclose(fp);
+                            printf("file already exists\n");
+                            continue;
+                        }
+
+                         int j=0;
                          char path2[200];
 
                             while(path[j]!='\n'){
@@ -448,13 +476,29 @@ int main(){
                                 j++;
                             }
                             path2[j]='\0';
-                            if(fp=fopen(path2,"r")){
-                                fclose(fp);
-                                printf("file exists\n");
-                            }else{
+
                             fp=fopen(path2,"w");
                             fclose(fp);
+
+                        int k=0;
+                        char bpath[200];
+
+                            while(path[k]!='\n'){
+                                if(path[k]=='/'){
+                                    bpath[k]='\0';
+                                    mkdir(bpath);
+                                }
+                                if(k==0){
+                                    bpath[k]='t';
+                                    k++;
+                                }
+                                bpath[k]=path[k];
+                                k++;
                             }
+                            bpath[k]='\0';
+
+                            fp=fopen(bpath,"w");
+                            fclose(fp);
                    }
 
 
@@ -490,7 +534,7 @@ int main(){
 
 
                            for(int i=0;i<6;i++) getchar();
-                           char string[2048];
+                           char string[100000];
                            char s;
                            if((s=getchar())=='"'){
                                int j=0;
@@ -553,7 +597,7 @@ int main(){
                                     scanf("%d:%d",&line,&pos);
 
 
-                                          FILE *fp,*temp;
+                                          FILE *fp,*temp,*backup;
 
                                           if(fp=fopen(path,"r")){
                                               fclose(fp);
@@ -561,6 +605,20 @@ int main(){
                                               printf("file does not exist\n");
                                               continue;
                                           }
+
+                                          char bpath[200];
+                                          strcpy(bpath,path);
+                                          bpath[0]='t';
+                                          fp=fopen(path,"r");
+                                          backup=fopen(bpath,"w");
+                                          char b;
+                                          b=fgetc(fp);
+                                          while(b!=EOF){
+                                             fputc(b,backup);
+                                             b=fgetc(fp);
+                                          }
+                                          fclose(fp);
+                                          fclose(backup);
 
                                           fp=fopen(path,"r+");
 
@@ -576,15 +634,16 @@ int main(){
                                           fclose(fp);
                                                 fp=fopen(path,"w");
                                                 temp=fopen("temp.txt","r");
-                                                char buffer[1000];
+                                                char buffer[100000];
                                                 for(int i=1;i<line;i++){
-                                                    fgets(buffer,1000,temp);
+                                                    fgets(buffer,100000,temp);
                                                     fputs(buffer,fp);
                                                 }
 
                                                 for(int i=0;i<pos;i++){
                                                     char c;
                                                     c=fgetc(temp);
+                                                    if(c==EOF) break;
                                                     fputc(c,fp);
                                                 }
                                                 fputs(string,fp);
@@ -701,13 +760,27 @@ int main(){
                     printf("invalid direction\n");
                     continue;
                    }
-                   FILE *fp;
+                   FILE *fp,*backup;
                    if(fp=fopen(path,"r")){
                         fclose(fp);
                    }else{
                         printf("file does not exist\n");
                         continue;
                     }
+
+                    char bpath[200];
+                    strcpy(bpath,path);
+                    bpath[0]='t';
+                    fp=fopen(path,"r");
+                    backup=fopen(bpath,"w");
+                    char b;
+                    b=fgetc(fp);
+                    while(b!=EOF){
+                         fputc(b,backup);
+                         b=fgetc(fp);
+                    }
+                    fclose(fp);
+                    fclose(backup);
 
                    removestr(path,line,pos,size,bof);
 
@@ -754,7 +827,7 @@ int main(){
                     continue;
                    }
 
-                   FILE *fp;
+                   FILE *fp,*backup;
                    if(fp=fopen(path,"r")){
                         fclose(fp);
                    }else{
@@ -762,6 +835,19 @@ int main(){
                         continue;
                    }
 
+                   char bpath[200];
+                   strcpy(bpath,path);
+                   bpath[0]='t';
+                   fp=fopen(path,"r");
+                   backup=fopen(bpath,"w");
+                   char b;
+                   b=fgetc(fp);
+                   while(b!=EOF){
+                        fputc(b,backup);
+                        b=fgetc(fp);
+                   }
+                   fclose(fp);
+                   fclose(backup);
 
                         if(strcmp(command,"copystr")==0){
                             copystr(path,line,pos,size,bof);
@@ -806,7 +892,7 @@ int main(){
                    int line,pos;
                    scanf("%d:%d",&line,&pos);
 
-                   FILE *fp,*temp,*clipboard;
+                   FILE *fp,*temp,*clipboard,*backup;
 
                    if(fp=fopen(path,"r")){
                         fclose(fp);
@@ -814,6 +900,20 @@ int main(){
                         printf("file does not exist\n");
                         continue;
                    }
+
+                   char bpath[200];
+                   strcpy(bpath,path);
+                   bpath[0]='t';
+                   fp=fopen(path,"r");
+                   backup=fopen(bpath,"w");
+                   char b;
+                   b=fgetc(fp);
+                   while(b!=EOF){
+                        fputc(b,backup);
+                        b=fgetc(fp);
+                   }
+                   fclose(fp);
+                   fclose(backup);
 
                    fp=fopen(path,"r");
                    clipboard=fopen("clipboard.txt","r");
@@ -1202,6 +1302,29 @@ int main(){
             int v[20];
             int jai[20];
 
+            FILE *fp,*temp,*backup;
+
+            if(fp=fopen(path,"r")){
+                fclose(fp);
+            }else{
+                printf("file does not exists\n");
+                continue;
+            }
+
+            char bpath[200];
+            strcpy(bpath,path);
+            bpath[0]='t';
+            fp=fopen(path,"r");
+            backup=fopen(bpath,"w");
+            char b;
+            b=fgetc(fp);
+            while(b!=EOF){
+                fputc(b,backup);
+                b=fgetc(fp);
+            }
+            fclose(fp);
+            fclose(backup);
+
             find(path,string1,&t,v,jai);
 
 
@@ -1214,7 +1337,7 @@ int main(){
                 if(t==0) printf("not found str1\n");
                 else
                 {
-                  FILE *fp,*temp;
+
                   fp=fopen(path,"r");
                   temp=fopen("temp.txt","w");
 
@@ -1663,7 +1786,29 @@ int main(){
                 path[i]='\0';
             }
 
-            FILE *fp,*temp;
+            FILE *fp,*temp,*backup;
+
+            if(fp=fopen(path,"r")){
+                fclose(fp);
+            }else{
+                printf("file does not exists\n");
+                continue;
+            }
+
+            char bpath[200];
+            strcpy(bpath,path);
+            bpath[0]='t';
+            fp=fopen(path,"r");
+            backup=fopen(bpath,"w");
+            char b;
+            b=fgetc(fp);
+            while(b!=EOF){
+                fputc(b,backup);
+                b=fgetc(fp);
+            }
+            fclose(fp);
+            fclose(backup);
+
             fp=fopen(path,"r");
             temp=fopen("temp.txt","w");
             int tabs=0;
@@ -1763,6 +1908,83 @@ int main(){
             fclose(temp);
             remove("temp.txt");
 
+
+    }else
+    if(strcmp(command,"undo")==0){
+
+         char f[7];
+         scanf("%s",f);
+         getchar();
+         if(strcmp(f,"--file")==0){
+
+            char path[200];
+            char c;
+            if((c=getchar())=='"'){
+                        getchar();
+                        int i=0;
+                        while((c=getchar())!='"'){
+                             path[i]=c;
+                             i++;
+                        }
+                        path[i]='\0';
+            }else{
+                    int i=0;
+                    while((c=getchar())!='\n'){
+                        path[i]=c;
+                        i++;
+                    }
+                    path[i]='\0';
+            }
+
+            FILE *fp,*temp,*backup;
+
+            if(fp=fopen(path,"r")){
+                fclose(fp);
+            }else{
+                fclose(fp);
+                printf("file does not exists\n");
+                continue;
+            }
+
+            char bpath[200];
+            strcpy(bpath,path);
+            bpath[0]='t';
+
+            fp=fopen(path,"r");
+            temp=fopen("temp.txt","w");
+            char c1;
+            c1=fgetc(fp);
+            while(c1!=EOF){
+                fputc(c1,temp);
+                c1=fgetc(fp);
+            }
+            fclose(fp);
+            fclose(temp);
+
+            backup=fopen(bpath,"r");
+            fp=fopen(path,"w");
+            char c2;
+            c2=fgetc(backup);
+            while(c2!=EOF){
+                fputc(c2,fp);
+                c2=fgetc(backup);
+            }
+            fclose(fp);
+            fclose(backup);
+
+            temp=fopen("temp.txt","r");
+            backup=fopen(bpath,"w");
+            char c3;
+            c3=fgetc(temp);
+            while(c3!=EOF){
+                fputc(c3,backup);
+                c3=fgetc(temp);
+            }
+            fclose(backup);
+            fclose(temp);
+            remove("temp.txt");
+
+         }else{printf("invalid\n");}
 
     }else
     if(strcmp(command,"exit")==0){
