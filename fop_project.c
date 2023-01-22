@@ -87,7 +87,7 @@ void copystr(char path[],int line,int pos,int size,char bof){
                         curser++;
                   }
                   curser+=pos;
-                  fp=fclose(fp);
+                  fclose(fp);
                   fp=fopen(path,"r");
 
                   if(bof=='b'){
@@ -119,12 +119,15 @@ void copystr(char path[],int line,int pos,int size,char bof){
 }
 
 void find(char path[],char string[],int *t,int v[],int jai[]){
-
-            int jaighah[20];
-            int vajeh[20];
+      int check=0;
+            int jaighah[200];
+            int vajeh[200];
+            int vaje[200];
+            int jaigha[200];
             int tedad_yaft=0;
 
             if(string[0]=='*'){
+                    check=1;
                FILE *fp;
                fp=fopen(path,"r");
 
@@ -136,77 +139,23 @@ void find(char path[],char string[],int *t,int v[],int jai[]){
                while(c!=EOF){
 
                       if(c==string[i]){
-                      i++;
-                      int cursor=ftell(fp);
-                      int words=tedadva;
-                      char s;
-                      int compare=0;
-                           while(string[i]!='\0'){
+                         i++;
+                         int cursor=ftell(fp);
+                         int words=tedadva;
+                         char s;
+                         int compare=0;
+                            while(string[i]!='\0'){
 
-                                if(string[i-1]!='*' || (string[i]!=' ' && string[i]!='\n')){
-                                   s=fgetc(fp);
-                                }
-
-                                if(s==' ' || s=='\n') tedadva++;
-                                if(s=='\n') bn++;
-
-                                if(s!=string[i]){
-                                     compare=1;
-                                     c=s;
-                                     break;
-                                }else{
-                                     i++;
-                                }
-
-                               if(string[i]=='*' && (string[i+1]=='\0' || string[i+1]=='\n' || string[i+1]==' ')){
-                                     while(s!=' ' && s!='\n' && s!=EOF){
-                                          s=fgetc(fp);
-                                          if(s==' ' || s=='\n') tedadva++;
-                                          if(s=='\n') bn++;
-                                     }
-                                     i++;
-                               }
-
-                              if(string[i]=='*' && (string[i-1]=='\n' || string[i-1]==' ')){
-                                     i++;
-                                     s=fgetc(fp);
-                                     if(s==' ' || s=='\n') tedadva++;
-                                     if(s=='\n') bn++;
-
-                                     while(s!=string[i] && s!=' ' && s!='\n' && s!=EOF){
-                                          s=fgetc(fp);
-                                          if(s==' ' || s=='\n') tedadva++;
-                                          if(s=='\n') bn++;
-                                    }
-
-                             if(s==' ' || s=='\n' || s==EOF){
+                               s=fgetc(fp);
+                               if(s!=string[i]){
                                   compare=1;
-                                  c=s;
+                                  if(s==' ' || s=='\n') tedadva++;
+                                  if(s=='\n') bn++;
                                   break;
-                            }else{
-                                  i++;
+                               }
+                               i++;
                             }
 
-                            }
-                       }
-
-                        if(string[i]=='\0'){
-
-                             if(string[i-1]=='*'){
-
-                             }else{
-
-                                c=fgetc(fp);
-
-                                if(c==' ' || c=='\n' || c==EOF){
-                                tedadva++;
-                                if(c=='\n') bn++;
-
-                                }else{
-                                compare=1;
-                                }
-                             }
-                       }
 
                            if(compare==0){
                                jaighah[j]=cursor-(bn+1)*1+1;
@@ -215,26 +164,48 @@ void find(char path[],char string[],int *t,int v[],int jai[]){
                                v++;
                            }
 
-                }
+                       }
                          c=fgetc(fp);
                          if(c==' ' || c=='\n') tedadva++;
                          if(c=='\n') bn++;
 
-                    i=1;
+                         i=1;
 
-              }
+                 }
 
                   tedad_yaft=j;
 
-              }else{
-                     FILE *fp;
-                     fp=fopen(path,"r");
+                  for(int i=0;i<j;i++){
+                    if(i<j-1){
+                      if(vajeh[i]==vajeh[i+1]){
+                          vajeh[i]=0;
+                          jaighah[i]=0;
+                      }
+                    }
+                  }
 
-                     int v=0,j=0,bn=0;
-                     int tedadva=1;
-                     char c;
-                     c=fgetc(fp);
-                     int i=0;
+                  int m=0;
+                  int jo=0;
+                  for(int i=0;i<j;i++){
+                      if(vajeh[i]!=0){
+                         vaje[m]=vajeh[i];
+                         jaigha[m]=jaighah[i];
+                         m++;
+                      }
+                  }
+                  tedad_yaft=m;
+
+             }else{
+                 check=2;
+                FILE *fp;
+                fp=fopen(path,"r");
+
+                int setare=0;
+                int v=0,j=0,bn=0;
+                int tedadva=1;
+                char c;
+                c=fgetc(fp);
+                int i=0;
                 while(c!=EOF){
                         if(c==string[i]){
                                 i++;
@@ -243,71 +214,82 @@ void find(char path[],char string[],int *t,int v[],int jai[]){
                                 char s;
                                 int compare=0;
                            while(string[i]!='\0'){
+                                 int flag=0;
 
-                                if(string[i-1]!='*' || (string[i]!=' ' && string[i]!='\n')){
-                                   s=fgetc(fp);
-                                }
+                                 if(string[i]=='*' && (string[i+1]==' ' || string[i+1]=='\0')){
+                                        setare=1;
+                                    if(string[i+1]=='\0'){
+                                        s=fgetc(fp);
+                                        while(s!=' ' && s!='\n' && s!=EOF) s=fgetc(fp);
+                                        if(s==' ' || s=='\n') tedadva++;
+                                        if(s=='\n') bn++;
+                                        break;
+                                    }else
+                                    if(string[i+1]==' '){
+                                        s=fgetc(fp);
+                                        while(s!=' ' && s!='\n' && s!=EOF) s=fgetc(fp);
+                                        if(s==' ' || s=='\n') tedadva++;
+                                        if(s=='\n') bn++;
+                                        i++;
+                                        i++;
+                                    }
+                                 }
 
-                                if(s==' ' || s=='\n') tedadva++;
-                                if(s=='\n') bn++;
+                                 if(string[i]=='*' && string[i-1]==' '){
+                                        setare=1;
+                                    char reshte[50];
+                                    char zirreshte[30];
+                                    int k=0;
+                                    int f=0;
+                                    char *p;
 
-                                if(s!=string[i]){
-                                     compare=1;
-                                     c=s;
-                                     break;
-                                }else{
-                                     i++;
-                                }
+                                    i++;
 
-                               if(string[i]=='*' && (string[i+1]=='\0' || string[i+1]=='\n' || string[i+1]==' ')){
-                                     while(s!=' ' && s!='\n' && s!=EOF){
-                                          s=fgetc(fp);
-                                          if(s==' ' || s=='\n') tedadva++;
-                                          if(s=='\n') bn++;
-                                     }
-                                     i++;
-                               }
-
-                              if(string[i]=='*' && (string[i-1]=='\n' || string[i-1]==' ')){
-                                     i++;
-                                     s=fgetc(fp);
-                                     if(s==' ' || s=='\n') tedadva++;
-                                     if(s=='\n') bn++;
-
-                                     while(s!=string[i] && s!=' ' && s!='\n' && s!=EOF){
-                                          s=fgetc(fp);
-                                          if(s==' ' || s=='\n') tedadva++;
-                                          if(s=='\n') bn++;
+                                    while(1){
+                                        if(string[i]==' ' || string[i]=='\0') break;
+                                        zirreshte[f]=string[i];
+                                        i++;
+                                        f++;
                                     }
 
-                             if(s==' ' || s=='\n' || s==EOF){
-                                  compare=1;
-                                  c=s;
-                                  break;
-                            }else{
-                                  i++;
-                            }
+                                    s=fgetc(fp);
+                                    while(s!=' ' && s!='\n'){
+                                            if(s==EOF){
+                                                flag=1;
+                                                c=s;
+                                                break;
+                                            }
+                                            reshte[k]=s;
+                                            k++;
+                                            s=fgetc(fp);
+                                    }
+                                    reshte[k]='\0';
+                                    zirreshte[f]='\0';
+                                    if(s==' ' || s=='\n') tedadva++;
+                                    if(s=='\n') bn++;
+                                    p=strstr(reshte,zirreshte);
+                                    if(p){
+                                        break;
+                                    }else{
+                                      compare=1;
+                                      break;
+                                    }
+                                 }
+                                 if(flag==1) break;
 
-                            }
-                       }
+                                 s=fgetc(fp);
+                                 if(s!=string[i]){
+                                    compare=1;
+                                    if(s==' ' || s=='\n') tedadva++;
+                                    if(s=='\n') bn++;
+                                    break;
+                                 }
+                                 if(s==' ' || s=='\n') tedadva++;
+                                 if(s=='\n') bn++;
+                                 i++;
 
-                        if(string[i]=='\0'){
+                         }
 
-                             if(string[i-1]=='*'){
-
-                             }else{
-
-                                c=fgetc(fp);
-
-                                if(c==' ' || c=='\n' || c==EOF){
-                                //tedadva++;
-                                //if(c=='\n') bn++;
-
-                                }else{
-                                compare=1;
-                                }
-                             }
-                       }
 
                            if(compare==0){
                                jaighah[j]=cursor-(bn+1)*1+1;
@@ -316,29 +298,53 @@ void find(char path[],char string[],int *t,int v[],int jai[]){
                                v++;
                            }
 
+                     }
+
+                    if(c!=EOF) c=fgetc(fp);
+                    if(c==' ' || c=='\n') tedadva++;
+                    if(c=='\n') bn++;
+
+                    i=0;
+
+
+               }
+
+             if(setare==1){
+                int k=1;
+                for(int i=0;i<j;i++){
+                 if(vajeh[i]==vajeh[k]){
+                   while(vajeh[i]==vajeh[k]){
+                      vajeh[k]=0;
+                      jaighah[k]=0;
+                      k++;
+                   }
+                 }
+                     i=k-1;
+                   k++;
                 }
 
-                    while(c!=' ' && c!='\n' && c!=EOF) c=fgetc(fp);
-                         if(c==' ' || c=='\n') tedadva++;
-                         if(c=='\n') bn++;
-                    if(c!=EOF) c=fgetc(fp);
-
-                i=0;
-
-
-            }
-
-
+             }
 
                   tedad_yaft=j;
-        }
 
-        *t=tedad_yaft;
-        for(int i=0;i<tedad_yaft;i++){
-            v[i]=vajeh[i];
         }
-        for(int i=0;i<tedad_yaft;i++){
-            jai[i]=jaighah[i];
+        if(check==1){
+            *t=tedad_yaft;
+            for(int i=0;i<tedad_yaft;i++){
+                v[i]=vaje[i];
+            }
+            for(int i=0;i<tedad_yaft;i++){
+                jai[i]=jaigha[i];
+            }
+        }
+        if(check==2){
+            *t=tedad_yaft;
+            for(int i=0;i<tedad_yaft;i++){
+                v[i]=vajeh[i];
+            }
+            for(int i=0;i<tedad_yaft;i++){
+                jai[i]=jaighah[i];
+            }
         }
 }
 
@@ -1129,8 +1135,8 @@ int main(){
 
 
         int t;
-        int v[20];
-        int jai[20];
+        int v[200];
+        int jai[200];
 
         find(path,string,&t,v,jai);
 
@@ -1347,8 +1353,8 @@ int main(){
             }
 
             int t;
-            int v[20];
-            int jai[20];
+            int v[200];
+            int jai[200];
 
             FILE *fp,*temp,*backup;
 
