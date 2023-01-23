@@ -348,7 +348,9 @@ void find(char path[],char string[],int *t,int v[],int jai[]){
         }
 }
 
-void tree(char *basePath,const int root,int depth){
+void tree(char *basePath,const int root,int depth,char khoroji[]){
+
+    char a1=179,a2=195,a3=196;
 
     if(depth==-1){
 
@@ -372,23 +374,265 @@ void tree(char *basePath,const int root,int depth){
         {
             for (i=0; i<root; i++)
             {
-                if (i%2 == 0 || i == 0)
-                    printf("%c", 179);
-                else
-                    printf(" ");
-
+                if (i%2 == 0 || i == 0){
+                    //printf("%c", 179);
+                    strcat(khoroji,"|");
+                }else{
+                    //printf(" ");
+                    strcat(khoroji," ");
+                }
             }
 
-            printf("%c%c%s\n", 195, 196, dp->d_name);
+            //printf("%c%c%s\n", 195, 196, dp->d_name);
+            strcat(khoroji,"|-");
+            strcat(khoroji,"-");
+            strcat(khoroji,dp->d_name);
+            strcat(khoroji,"\n");
 
             strcpy(path, basePath);
             strcat(path, "/");
             strcat(path, dp->d_name);
-            tree(path,root+2,depth);
+            tree(path,root+2,depth,khoroji);
         }
     }
 
     closedir(dir);
+}
+
+
+void insertstr(char path[],char string[],int line,int pos){
+                   FILE *fp,*temp,*backup;
+
+                    if(fp=fopen(path,"r")){
+                        fclose(fp);
+                    }else{
+                        printf("file does not exist\n");
+                        return;
+                    }
+
+                    fp=fopen(path,"r");
+                    char w;
+                    int khat=1,caracter=0;
+                    w=fgetc(fp);
+                    caracter++;
+                    int flag=0;
+                    while(w!=EOF){
+                        w=fgetc(fp);
+                        caracter++;
+
+                        if(w=='\n'){
+                           if(khat==line){
+                              if(pos>caracter){
+                                 flag=1;
+                              }
+                           }
+                           khat++;
+                           caracter=0;
+                        }
+                    }
+                    fclose(fp);
+                    if(flag==1){
+                        printf("invalid position\n");
+                        return;
+                    }
+                    if(line>khat){
+                        printf("invalid position\n");
+                        return;
+                    }
+                    if(pos>caracter && line==khat){
+                        printf("invalid position\n");
+                        return;
+                    }
+
+
+
+                    char bpath[200];
+                    strcpy(bpath,path);
+                    bpath[0]='t';
+                    fp=fopen(path,"r");
+                    backup=fopen(bpath,"w");
+                    char b;
+                    b=fgetc(fp);
+                    while(b!=EOF){
+                        fputc(b,backup);
+                        b=fgetc(fp);
+                    }
+                    fclose(fp);
+                    fclose(backup);
+
+                    fp=fopen(path,"r+");
+
+                    temp=fopen("temp.txt","w");
+                    char firstcopy;
+                    firstcopy=fgetc(fp);
+                    while(firstcopy!=EOF){
+
+                            fputc(firstcopy,temp);
+                            firstcopy=fgetc(fp);
+                    }
+                    fclose(temp);
+                    fclose(fp);
+                    fp=fopen(path,"w");
+                    temp=fopen("temp.txt","r");
+                    char buffer[100000];
+                    for(int i=1;i<line;i++){
+                            fgets(buffer,100000,temp);
+                            fputs(buffer,fp);
+                    }
+
+                    for(int i=0;i<pos;i++){
+                            char c;
+                            c=fgetc(temp);
+                            if(c==EOF) break;
+                            fputc(c,fp);
+                    }
+                    fputs(string,fp);
+
+                    char secondcopy;
+                    secondcopy=fgetc(temp);
+                    while(secondcopy!=EOF){
+                        fputc(secondcopy,fp);
+                        secondcopy=fgetc(temp);
+                    }
+                    fclose(fp);
+                    fclose(temp);
+                    remove("temp.txt");
+}
+
+void cat(char path[],char cater[]){
+
+                 FILE *fp;
+
+                 if(fp=fopen(path,"r")){
+                        fclose(fp);
+                 }else{
+                        printf("file does not exist\n");
+                        return;
+                }
+
+                 fp=fopen(path,"r");
+                 if(fp==NULL){
+                    printf("File not found\n");
+                    return;
+                 }
+                 int i=0;
+                 char character;
+                 character=fgetc(fp);
+                 while(character!=EOF){
+                    cater[i]=character;
+                    i++;
+                    character=fgetc(fp);
+                 }
+                 cater[i]='\0';
+                 fclose(fp);
+}
+
+void grep(char string[],char option,char khoroji[]){
+
+            struct GREP {
+                 char file[50];
+                 char sentence[1000];
+            } ;
+
+            struct GREP g[20];
+            int m=0;
+
+                   while(1){
+                       char path[200];
+                       char c;
+                       char s;
+                       c=getchar();
+                       if(c=='=') break;
+                       if(c=='"'){
+                           getchar();
+                           int i=0;
+                           while((c=getchar())!='"'){
+                              path[i]=c;
+                              i++;
+                           }
+                           path[i]='\0';
+                          s=getchar();
+                       }else{
+                           int i=0;
+                           while(c!=' ' && c!='\n'){
+                               c=getchar();
+                               if(c==' ' || c=='\n') break;
+                               path[i]=c;
+                               i++;
+                           }
+                           s=c;
+                           path[i]='\0';
+                       }
+
+                            FILE *fp;
+                            fp=fopen(path,"r");
+                            if(fp==NULL){
+                                printf("file does not exist\n");
+                                break;
+                            }
+
+                            char jomle[1000];
+                            char x;
+
+                            while(1){
+
+                               x=fgetc(fp);
+                               int k=0;
+                               while(x!='\n' && x!=EOF){
+                                   jomle[k]=x;
+                                   x=fgetc(fp);
+                                   k++;
+                               }
+                               jomle[k]='\0';
+                               char *p=strstr(jomle,string);
+                               if(p){
+                                   strcpy(g[m].file,path);
+                                   strcpy(g[m].sentence,jomle);
+                                   m++;
+                                }
+                               if(x==EOF) break;
+                            }
+                            fclose(fp);
+                            //if(s=='\n') break;
+
+                   }
+
+                   if(m==0){
+                      printf("not found this pattern\n");
+                      return;
+                   }
+                   if(option=='c'){
+                       //printf("%d\n",i);
+                       int n=m;
+                       int e=0;
+                       while(n>0){
+                          e*=10;
+                          e+=n%10;
+                          n/=10;
+                       }
+                       while(e>0){
+                          char temp=e%10+'0';
+                          strcat(khoroji,temp);
+                          e/=10;
+                       }
+
+
+                   }else
+                   if(option=='i'){
+                       for(int j=0;j<m;j++){
+                           //printf("%s\n",g[j].file);
+                           strcat(khoroji,g[j].file);
+                           strcat(khoroji,"\n");
+                       }
+                   }else{
+                      for(int j=0;j<m;j++){
+                          //printf("%s : %s\n",g[j].file,g[j].sentence);
+                          strcat(khoroji,g[j].file);
+                          strcat(khoroji," : ");
+                          strcat(khoroji,g[j].sentence);
+                          strcat(khoroji,"\n");
+                      }
+                   }
 }
 
 
@@ -614,103 +858,8 @@ int main(){
                                     int line,pos;
                                     scanf("%d:%d",&line,&pos);
 
+                 insertstr(path,string,line,pos);
 
-                                          FILE *fp,*temp,*backup;
-
-                                          if(fp=fopen(path,"r")){
-                                              fclose(fp);
-                                          }else{
-                                              printf("file does not exist\n");
-                                              continue;
-                                          }
-
-                                          fp=fopen(path,"r");
-                                          char w;
-                                          int khat=1,caracter=0;
-                                          w=fgetc(fp);
-                                          caracter++;
-                                          int flag=0;
-                                          while(w!=EOF){
-                                               w=fgetc(fp);
-                                               caracter++;
-
-                                               if(w=='\n'){
-                                                    if(khat==line){
-                                                        if(pos>caracter){
-                                                            flag=1;
-                                                        }
-                                                    }
-                                                  khat++;
-                                                  caracter=0;
-                                               }
-                                          }
-                                          fclose(fp);
-                                          if(flag==1){
-                                             printf("invalid position\n");
-                                             continue;
-                                          }
-                                          if(line>khat){
-                                             printf("invalid position\n");
-                                             continue;
-                                          }
-                                          if(pos>caracter && line==khat){
-                                             printf("invalid position\n");
-                                             continue;
-                                          }
-
-
-
-                                          char bpath[200];
-                                          strcpy(bpath,path);
-                                          bpath[0]='t';
-                                          fp=fopen(path,"r");
-                                          backup=fopen(bpath,"w");
-                                          char b;
-                                          b=fgetc(fp);
-                                          while(b!=EOF){
-                                             fputc(b,backup);
-                                             b=fgetc(fp);
-                                          }
-                                          fclose(fp);
-                                          fclose(backup);
-
-                                          fp=fopen(path,"r+");
-
-                                          temp=fopen("temp.txt","w");
-                                          char firstcopy;
-                                          firstcopy=fgetc(fp);
-                                          while(firstcopy!=EOF){
-
-                                             fputc(firstcopy,temp);
-                                             firstcopy=fgetc(fp);
-                                          }
-                                          fclose(temp);
-                                          fclose(fp);
-                                                fp=fopen(path,"w");
-                                                temp=fopen("temp.txt","r");
-                                                char buffer[100000];
-                                                for(int i=1;i<line;i++){
-                                                    fgets(buffer,100000,temp);
-                                                    fputs(buffer,fp);
-                                                }
-
-                                                for(int i=0;i<pos;i++){
-                                                    char c;
-                                                    c=fgetc(temp);
-                                                    if(c==EOF) break;
-                                                    fputc(c,fp);
-                                                }
-                                                fputs(string,fp);
-
-                                                char secondcopy;
-                                                secondcopy=fgetc(temp);
-                                                while(secondcopy!=EOF){
-                                                    fputc(secondcopy,fp);
-                                                    secondcopy=fgetc(temp);
-                                                }
-                                                fclose(fp);
-                                                fclose(temp);
-                                                remove("temp.txt");
 
         }else{printf("Invalid command\n");}
 
@@ -740,16 +889,14 @@ int main(){
                     path[i]='\0';
             }
 
-                 char buffer[2048];
-
-                 FILE *fp;
+            FILE *fp;
 
                  if(fp=fopen(path,"r")){
                         fclose(fp);
                  }else{
                         printf("file does not exist\n");
                         continue;
-                }
+                 }
 
                  fp=fopen(path,"r");
                  if(fp==NULL){
@@ -760,14 +907,11 @@ int main(){
                  char character;
                  character=fgetc(fp);
                  while(character!=EOF){
-                    buffer[i]=character;
+                    printf("%c",character);
                     i++;
                     character=fgetc(fp);
                  }
                  fclose(fp);
-                 for(int j=0;j<i;j++){
-                    printf("%c",buffer[j]);
-                 }
                  printf("\n");
 
              }else{printf("Invalid command\n");}
@@ -1815,7 +1959,11 @@ int main(){
             continue;
         }
         scanf("%s", path);
-        tree(path, 0,depth);
+
+        char khoroji[10000];
+
+        tree(path, 0,depth,khoroji);
+        printf("%s",khoroji);
 
     }else
     if(strcmp(command,"auto-indent")==0){
@@ -2039,6 +2187,821 @@ int main(){
             remove("temp.txt");
 
          }else{printf("invalid\n");}
+
+    }else
+    if(strcmp(command,"arman")==0){
+           getchar();
+           char first[10];
+           scanf("%s",first);
+
+           if(strcmp(first,"cat")==0){
+
+                for(int i=0;i<8;i++) getchar();
+
+                char path1[200];
+                char c;
+                if((c=getchar())=='"'){
+                    getchar();
+                    int i=0;
+                    while((c=getchar())!='"'){
+                        path1[i]=c;
+                        i++;
+                    }
+                    path1[i]='\0';
+                    getchar();
+                }else{
+                    int i=0;
+                    while((c=getchar())!=' '){
+                        path1[i]=c;
+                        i++;
+                    }
+                    path1[i]='\0';
+                }
+
+                char khoroji[1000000];
+                cat(path1,khoroji);
+
+                for(int i=0;i<3;i++) getchar();
+
+                char second[10];
+                scanf("%s",second);
+
+                if(strcmp(second,"insertstr")==0){
+
+                      for(int i=0;i<8;i++) getchar();
+
+                      char path2[200];
+                      char c;
+                      if((c=getchar())=='"'){
+                         getchar();
+                         int i=0;
+                         while((c=getchar())!='"'){
+                             path2[i]=c;
+                             i++;
+                         }
+                         path2[i]='\0';
+                         getchar();
+                      }else{
+                         int i=0;
+                         while((c=getchar())!=' '){
+                             path2[i]=c;
+                             i++;
+                         }
+                         path2[i]='\0';
+                      }
+
+                      for(int i=0;i<6;i++) getchar();
+                      int line,pos;
+                      scanf("%d:%d",&line,&pos);
+
+                      insertstr(path2,khoroji,line,pos);
+
+
+                }
+                if(strcmp(second,"find")==0){
+                      for(int i=0;i<8;i++) getchar();
+                      char path2[200];
+                      char c;
+                      if((c=getchar())=='"'){
+                         getchar();
+                         int i=0;
+                         while((c=getchar())!='"'){
+                            path2[i]=c;
+                            i++;
+                         }
+                         path2[i]='\0';
+                         c=getchar();
+
+                      }else{
+                         int i=0;
+                         c=getchar();
+                         while(c!=' ' && c!='\n'){
+                             path2[i]=c;
+                             i++;
+                             c=getchar();
+                         }
+                         path2[i]='\0';
+                      }
+
+                      int count=0,at=0,atn=1,byword=0,all=0;
+
+
+                      if(c=='\n'){
+
+                      }else{
+                          char dastoor[50];
+                          gets(dastoor);
+
+                          int k=0;
+                          while(dastoor[k]!='\0'){
+                               if(dastoor[k]=='-'){
+                                  if(dastoor[k+2]=='o') count=1;
+                                      if(dastoor[k+2]=='t'){
+                                         at=1;
+                                         atn=dastoor[k+4]-'0';
+                                      }
+                                  if(dastoor[k+2]=='y') byword=1;
+                                  if(dastoor[k+2]=='l') all=1;
+                               }
+                               k++;
+                           }
+
+                      }
+
+                      FILE *fp;
+                      if(fp=fopen(path2,"r")){
+                          fclose(fp);
+                      }else{
+                          printf("file does not exist\n");
+                          fclose(fp);
+                          continue;
+                      }
+
+
+
+                      int t;
+                      int v[200];
+                      int jai[200];
+
+                      find(path2,khoroji,&t,v,jai);
+
+                      if(all==1 && byword==1 && count==0 && at==0){
+                if(t==0){
+                    printf("not found\n");
+                }else{
+                    for(int i=0;i<t;i++){
+                        printf("%d ",v[i]);
+                    }
+                    printf("\n");
+                }
+            }else
+            if(all==1 && byword==0 && count==0 && at==0){
+                if(t==0){
+                    printf("not found\n");
+                }else{
+                    for(int i=0;i<t;i++){
+                       printf("%d ",jai[i]);
+                    }
+                    printf("\n");
+                }
+            }else
+            if(all==0 && byword==0 && count==1 && at==0){
+                if(t==0){
+                    printf("not found\n");
+                }else{
+                    printf("%d\n",t);
+                }
+            }else
+            if(all==0 && byword==0 && count==0 && at==1){
+                if(t<atn){
+                    printf("not found\n");
+                }else{
+                    printf("%d\n",jai[atn]);
+                }
+            }else
+            if(all==0 && byword==1 && count==0 && at==0){
+                if(t==0){
+                    printf("not found\n");
+                }else{
+                    printf("%d\n",v[0]);
+                }
+            }else
+            if(all==0 && byword==0 && count==0 && at==0){
+
+               if(t==0){
+                    printf("not found\n");
+                }else{
+                    printf("%d\n",*(jai));
+                }
+
+                }else{printf("invalid combination of attributes\n");}
+
+
+                }
+
+           }
+           if(strcmp(first,"find")==0){
+         for(int i=0;i<7;i++) getchar();
+         char string[200];
+         char s;
+         int tedad;
+         if((s=getchar())=='"'){
+             int i=0;
+             while(1){
+                char a,b;
+                a=getchar();
+                if(a=='\\'){
+                    b=getchar();
+                    if(b=='n'){
+                        string[i]='\n';
+                        i++;
+                    }else
+                    if(b=='"'){
+                        string[i]='"';
+                        i++;
+                    }else
+                    if(b=='\\'){
+                        string[i]='\\';
+                        i++;
+                        string[i]=getchar();
+                        i++;
+                    }else
+                    {
+                       string[i]=b;
+                       i++;
+                    }
+                }else
+                if(a=='"'){
+                    getchar();
+                        break;
+                }else{
+                string[i]=a;
+                i++;
+                }
+
+             }
+             string[i]='\0';
+             tedad=i;
+         }else{
+              int i=0;
+              string[i]=s;
+              i++;
+              char a;
+              while((a=getchar())!=' '){
+                  string[i]=a;
+                  i++;
+              }
+              string[i]='\0';
+              tedad=i;
+         }
+
+         for(int i=0;i<7;i++) getchar();
+             char path[200];
+             char c;
+             if((c=getchar())=='"'){
+                    getchar();
+                    int i=0;
+                    while((c=getchar())!='"'){
+                        path[i]=c;
+                        i++;
+                    }
+                        path[i]='\0';
+                    c=getchar();
+
+            }else{
+                    int i=0;
+                    c=getchar();
+                    while(c!=' ' && c!='\n'){
+                        path[i]=c;
+                        i++;
+                        c=getchar();
+                    }
+                        path[i]='\0';
+            }
+
+            int count=0,at=0,atn=1,byword=0,all=0;
+
+
+            if(c=='\n'){
+
+            }else{
+                char dastoor[50];
+                char x;
+                int i=0;
+                while((x=getchar())!='='){
+                    dastoor[i]=x;
+                    i++;
+                }
+                i--;
+                dastoor[i]='\0';
+
+                int k=0;
+                while(dastoor[k]!='\0'){
+                    if(dastoor[k]=='-'){
+                        if(dastoor[k+2]=='o') count=1;
+                        if(dastoor[k+2]=='t'){
+                            at=1;
+                            atn=dastoor[k+4]-'0';
+                        }
+                        if(dastoor[k+2]=='y') byword=1;
+                        if(dastoor[k+2]=='l') all=1;
+                    }
+                    k++;
+                }
+
+            }
+
+            FILE *fp;
+            if(fp=fopen(path,"r")){
+                fclose(fp);
+            }else{
+                printf("file does not exist\n");
+                fclose(fp);
+                continue;
+            }
+
+
+
+        int t;
+        int v[200];
+        int jai[200];
+
+        find(path,string,&t,v,jai);
+
+        char khoroji[200];
+        int index=0;
+
+            if(all==1 && byword==1 && count==0 && at==0){
+                if(t==0){
+                    printf("not found\n");
+                }else{
+                    for(int i=0;i<t;i++){
+                        index+=sprintf(&khoroji[index],"%d",v[i]);
+                    }
+                    printf("\n");
+                }
+            }else
+            if(all==1 && byword==0 && count==0 && at==0){
+                if(t==0){
+                    printf("not found\n");
+                }else{
+                    for(int i=0;i<t;i++){
+                       index+=sprintf(&khoroji[index],"%d",jai[i]);
+                    }
+                    printf("\n");
+                }
+            }else
+            if(all==0 && byword==0 && count==1 && at==0){
+                if(t==0){
+                    printf("not found\n");
+                }else{
+                    index+=sprintf(&khoroji[index],"%d",t);
+                }
+            }else
+            if(all==0 && byword==0 && count==0 && at==1){
+                if(t<atn){
+                    printf("not found\n");
+                }else{
+                    index+=sprintf(&khoroji[index],"%d",jai[atn]);
+                }
+            }else
+            if(all==0 && byword==1 && count==0 && at==0){
+                if(t==0){
+                    printf("not found\n");
+                }else{
+                    index+=sprintf(&khoroji[index],"%d",v[0]);
+                }
+            }else
+            if(all==0 && byword==0 && count==0 && at==0){
+
+               if(t==0){
+                    printf("not found\n");
+                }else{
+                    index+=sprintf(&khoroji[index],"%d",jai[0]);
+                }
+
+            }else{printf("invalid combination of attributes\n");}
+
+
+                    for(int i=0;i<19;i++) getchar();
+
+                    char path2[200];
+                      char co;
+                      if((co=getchar())=='"'){
+                         getchar();
+                         int i=0;
+                         while((co=getchar())!='"'){
+                             path2[i]=co;
+                             i++;
+                         }
+                         path2[i]='\0';
+                         getchar();
+                      }else{
+                         int i=0;
+                         while((co=getchar())!=' '){
+                             path2[i]=co;
+                             i++;
+                         }
+                         path2[i]='\0';
+                      }
+
+                      for(int i=0;i<6;i++) getchar();
+                      int line,pos;
+                      scanf("%d:%d",&line,&pos);
+
+                      insertstr(path2,khoroji,line,pos);
+
+           }
+           if(strcmp(first,"tree")==0){
+                 getchar();
+                 int depth;
+                 scanf("%d",&depth);
+                 getchar();
+
+                 char path[5]="root";
+
+
+                 char khoroji[10000];
+
+                 tree(path, 0,depth,khoroji);
+
+                for(int i=0;i<3;i++) getchar();
+
+                char second[10];
+                scanf("%s",second);
+
+                if(strcmp(second,"insertstr")==0){
+
+                      for(int i=0;i<8;i++) getchar();
+
+                      char path2[200];
+                      char c;
+                      if((c=getchar())=='"'){
+                         getchar();
+                         int i=0;
+                         while((c=getchar())!='"'){
+                             path2[i]=c;
+                             i++;
+                         }
+                         path2[i]='\0';
+                         getchar();
+                      }else{
+                         int i=0;
+                         while((c=getchar())!=' '){
+                             path2[i]=c;
+                             i++;
+                         }
+                         path2[i]='\0';
+                      }
+
+                      for(int i=0;i<6;i++) getchar();
+                      int line,pos;
+                      scanf("%d:%d",&line,&pos);
+
+                      insertstr(path2,khoroji,line,pos);
+
+
+                }
+                if(strcmp(second,"find")==0){
+                      for(int i=0;i<8;i++) getchar();
+                      char path2[200];
+                      char c;
+                      if((c=getchar())=='"'){
+                         getchar();
+                         int i=0;
+                         while((c=getchar())!='"'){
+                            path2[i]=c;
+                            i++;
+                         }
+                         path2[i]='\0';
+                         c=getchar();
+
+                      }else{
+                         int i=0;
+                         c=getchar();
+                         while(c!=' ' && c!='\n'){
+                             path2[i]=c;
+                             i++;
+                             c=getchar();
+                         }
+                         path2[i]='\0';
+                      }
+
+                      int count=0,at=0,atn=1,byword=0,all=0;
+
+
+                      if(c=='\n'){
+
+                      }else{
+                          char dastoor[50];
+                          gets(dastoor);
+
+                          int k=0;
+                          while(dastoor[k]!='\0'){
+                               if(dastoor[k]=='-'){
+                                  if(dastoor[k+2]=='o') count=1;
+                                      if(dastoor[k+2]=='t'){
+                                         at=1;
+                                         atn=dastoor[k+4]-'0';
+                                      }
+                                  if(dastoor[k+2]=='y') byword=1;
+                                  if(dastoor[k+2]=='l') all=1;
+                               }
+                               k++;
+                           }
+
+                      }
+
+                      FILE *fp;
+                      if(fp=fopen(path2,"r")){
+                          fclose(fp);
+                      }else{
+                          printf("file does not exist\n");
+                          fclose(fp);
+                          continue;
+                      }
+
+
+
+                      int t;
+                      int v[200];
+                      int jai[200];
+
+                      find(path2,khoroji,&t,v,jai);
+
+                      if(all==1 && byword==1 && count==0 && at==0){
+                if(t==0){
+                    printf("not found\n");
+                }else{
+                    for(int i=0;i<t;i++){
+                        printf("%d ",v[i]);
+                    }
+                    printf("\n");
+                }
+            }else
+            if(all==1 && byword==0 && count==0 && at==0){
+                if(t==0){
+                    printf("not found\n");
+                }else{
+                    for(int i=0;i<t;i++){
+                       printf("%d ",jai[i]);
+                    }
+                    printf("\n");
+                }
+            }else
+            if(all==0 && byword==0 && count==1 && at==0){
+                if(t==0){
+                    printf("not found\n");
+                }else{
+                    printf("%d\n",t);
+                }
+            }else
+            if(all==0 && byword==0 && count==0 && at==1){
+                if(t<atn){
+                    printf("not found\n");
+                }else{
+                    printf("%d\n",jai[atn]);
+                }
+            }else
+            if(all==0 && byword==1 && count==0 && at==0){
+                if(t==0){
+                    printf("not found\n");
+                }else{
+                    printf("%d\n",v[0]);
+                }
+            }else
+            if(all==0 && byword==0 && count==0 && at==0){
+
+               if(t==0){
+                    printf("not found\n");
+                }else{
+                    printf("%d\n",*(jai));
+                }
+
+                }else{printf("invalid combination of attributes\n");}
+
+
+                }
+           }
+           if(strcmp(first,"grep")==0){
+                 getchar();
+                 getchar();
+                 char opt;
+                 char option='0';
+                 opt=getchar();
+                 if(opt=='c'){
+                     option='c';
+                     for(int i=0;i<7;i++) getchar();
+                 }else
+                 if(opt=='i'){
+                     option='i';
+                     for(int i=0;i<7;i++) getchar();
+                 }
+                 else{
+                     for(int i=0;i<4;i++) getchar();
+                }
+
+
+          char string[200];
+          char s;
+          if((s=getchar())=='"'){
+                    int j=0;
+
+                    while(1){
+                        char a,b,c;
+                        a=getchar();
+                        if(a=='"'){
+                            break;
+                        }
+                        if(a=='\\'){
+                             b=getchar();
+                             if(b=='\\'){
+                                 string[j]='\\';
+                                 j++;
+                                 string[j]=getchar();
+                                 j++;
+                             }else if(b=='n'){
+                                 string[j]='\n';
+                                 j++;
+                             }else if(b=='"'){
+                                 string[j]='"';
+                                 j++;
+                             }
+                        }else {
+                            string[j]=a;
+                            j++;
+                        }
+                    }
+                    string[j]='\0';
+                    getchar();
+                  }else{
+                               int j=0;
+                               char a,b;
+                               string[j]=s;
+                               j++;
+                               while((a=getchar())!=' '){
+                                  if(a=='\\'){
+                                    b=getchar();
+                                    if(b=='\\'){
+                                        string[j]='\\';
+                                        j++;
+                                        string[j]=getchar();
+                                        j++;
+                                    }else{
+                                        string[j]='\n';
+                                        j++;
+                                    }
+                                  }
+                                  string[j]=a;
+                                  j++;
+                               }
+                               string[j]='\0';
+
+                  }
+                  for(int i=0;i<8;i++) getchar();
+
+                  char khoroji[100000];
+                  grep(string,option,khoroji);
+
+                  for(int i=0;i<2;i++) getchar();
+
+                char second[10];
+                scanf("%s",second);
+
+                if(strcmp(second,"insertstr")==0){
+
+                      for(int i=0;i<8;i++) getchar();
+
+                      char path2[200];
+                      char c;
+                      if((c=getchar())=='"'){
+                         getchar();
+                         int i=0;
+                         while((c=getchar())!='"'){
+                             path2[i]=c;
+                             i++;
+                         }
+                         path2[i]='\0';
+                         getchar();
+                      }else{
+                         int i=0;
+                         while((c=getchar())!=' '){
+                             path2[i]=c;
+                             i++;
+                         }
+                         path2[i]='\0';
+                      }
+
+                      for(int i=0;i<6;i++) getchar();
+                      int line,pos;
+                      scanf("%d:%d",&line,&pos);
+
+                      insertstr(path2,khoroji,line,pos);
+
+
+                }
+                if(strcmp(second,"find")==0){
+                      for(int i=0;i<8;i++) getchar();
+                      char path2[200];
+                      char c;
+                      if((c=getchar())=='"'){
+                         getchar();
+                         int i=0;
+                         while((c=getchar())!='"'){
+                            path2[i]=c;
+                            i++;
+                         }
+                         path2[i]='\0';
+                         c=getchar();
+
+                      }else{
+                         int i=0;
+                         c=getchar();
+                         while(c!=' ' && c!='\n'){
+                             path2[i]=c;
+                             i++;
+                             c=getchar();
+                         }
+                         path2[i]='\0';
+                      }
+
+                      int count=0,at=0,atn=1,byword=0,all=0;
+
+
+                      if(c=='\n'){
+
+                      }else{
+                          char dastoor[50];
+                          gets(dastoor);
+
+                          int k=0;
+                          while(dastoor[k]!='\0'){
+                               if(dastoor[k]=='-'){
+                                  if(dastoor[k+2]=='o') count=1;
+                                      if(dastoor[k+2]=='t'){
+                                         at=1;
+                                         atn=dastoor[k+4]-'0';
+                                      }
+                                  if(dastoor[k+2]=='y') byword=1;
+                                  if(dastoor[k+2]=='l') all=1;
+                               }
+                               k++;
+                           }
+
+                      }
+
+                      FILE *fp;
+                      if(fp=fopen(path2,"r")){
+                          fclose(fp);
+                      }else{
+                          printf("file does not exist\n");
+                          fclose(fp);
+                          continue;
+                      }
+
+
+
+                      int t;
+                      int v[200];
+                      int jai[200];
+
+                      find(path2,khoroji,&t,v,jai);
+
+                      if(all==1 && byword==1 && count==0 && at==0){
+                if(t==0){
+                    printf("not found\n");
+                }else{
+                    for(int i=0;i<t;i++){
+                        printf("%d ",v[i]);
+                    }
+                    printf("\n");
+                }
+            }else
+            if(all==1 && byword==0 && count==0 && at==0){
+                if(t==0){
+                    printf("not found\n");
+                }else{
+                    for(int i=0;i<t;i++){
+                       printf("%d ",jai[i]);
+                    }
+                    printf("\n");
+                }
+            }else
+            if(all==0 && byword==0 && count==1 && at==0){
+                if(t==0){
+                    printf("not found\n");
+                }else{
+                    printf("%d\n",t);
+                }
+            }else
+            if(all==0 && byword==0 && count==0 && at==1){
+                if(t<atn){
+                    printf("not found\n");
+                }else{
+                    printf("%d\n",jai[atn]);
+                }
+            }else
+            if(all==0 && byword==1 && count==0 && at==0){
+                if(t==0){
+                    printf("not found\n");
+                }else{
+                    printf("%d\n",v[0]);
+                }
+            }else
+            if(all==0 && byword==0 && count==0 && at==0){
+
+               if(t==0){
+                    printf("not found\n");
+                }else{
+                    printf("%d\n",*(jai));
+                }
+
+                }else{printf("invalid combination of attributes\n");}
+
+
+                }
+           }
+
 
     }else
     if(strcmp(command,"exit")==0){
