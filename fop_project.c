@@ -375,15 +375,11 @@ void tree(char *basePath,const int root,int depth,char khoroji[]){
             for (i=0; i<root; i++)
             {
                 if (i%2 == 0 || i == 0){
-                    //printf("%c", 179);
                     strcat(khoroji,"|");
                 }else{
-                    //printf(" ");
                     strcat(khoroji," ");
                 }
             }
-
-            //printf("%c%c%s\n", 195, 196, dp->d_name);
             strcat(khoroji,"|-");
             strcat(khoroji,"-");
             strcat(khoroji,dp->d_name);
@@ -393,6 +389,50 @@ void tree(char *basePath,const int root,int depth,char khoroji[]){
             strcat(path, "/");
             strcat(path, dp->d_name);
             tree(path,root+2,depth,khoroji);
+        }
+    }
+
+    closedir(dir);
+}
+
+void treemain(char *basePath,const int root,int depth){
+
+    char a1=179,a2=195,a3=196;
+
+    if(depth==-1){
+
+    }else{
+        if(root==2*(depth+1)){
+            return;
+        }
+    }
+
+    int i;
+    char path[1000];
+    struct dirent *dp;
+    DIR *dir=opendir(basePath);
+
+    if (!dir)
+        return;
+
+    while ((dp = readdir(dir)) != NULL)
+    {
+        if (strcmp(dp->d_name, ".") != 0 && strcmp(dp->d_name, "..") != 0)
+        {
+            for (i=0; i<root; i++)
+            {
+                if (i%2 == 0 || i == 0){
+                    printf("%c", 179);
+                }else{
+                    printf(" ");
+                }
+            }
+
+            printf("%c%c%s\n", 195, 196, dp->d_name);
+            strcpy(path, basePath);
+            strcat(path, "/");
+            strcat(path, dp->d_name);
+            treemain(path,root+2,depth);
         }
     }
 
@@ -1315,7 +1355,7 @@ int main(){
                 if(t<atn){
                     printf("not found\n");
                 }else{
-                    printf("%d\n",jai[atn]);
+                    printf("%d\n",jai[atn-1]);
                 }
             }else
             if(all==0 && byword==1 && count==0 && at==0){
@@ -1323,6 +1363,13 @@ int main(){
                     printf("not found\n");
                 }else{
                     printf("%d\n",v[0]);
+                }
+            }else
+            if(all==0 && byword==1 && count==0 && at==1){
+                if(t<atn){
+                    printf("not found\n");
+                }else{
+                    printf("%d\n",v[atn-1]);
                 }
             }else
             if(all==0 && byword==0 && count==0 && at==0){
@@ -1931,7 +1978,7 @@ int main(){
         }
 
             if(s1==EOF && s2!=EOF){
-                printf("<<<<<<<<<< %d >>>>>>>>>> content from file2\n",j);
+                printf("<<<<<<<<<< %d-end >>>>>>>>>> content from file2\n",j);
                 char buffer[1000];
                 while(fgets(buffer,1000,fp2)!=NULL){
                     printf("%s",buffer);
@@ -1960,10 +2007,7 @@ int main(){
         }
         scanf("%s", path);
 
-        char khoroji[10000];
-
-        tree(path, 0,depth,khoroji);
-        printf("%s",khoroji);
+        treemain(path, 0,depth);
 
     }else
     if(strcmp(command,"auto-indent")==0){
@@ -2069,14 +2113,16 @@ int main(){
                             }
                         }
                     fputc(s,temp);
+                    s=fgetc(fp);
+                    while(s==' ' || s=='\n') s=fgetc(fp);
+                    if(s!='}'){
                     fputc(bn,temp);
+                    }
                     for(int i=0;i<tabs;i++){
                             for(int j=0;j<4;j++){
                                 fputc(sp,temp);
                             }
-                        }
-                    s=fgetc(fp);
-                    while(s==' ' || s=='\n') s=fgetc(fp);
+                    }
                     if(s!='}') fputc(s,temp);
                     continue;
                 }
