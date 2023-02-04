@@ -1587,8 +1587,9 @@ int main(){
                   temp=fopen("temp.txt","w");
 
                   int i=0;
+                  int h=1;
                   int space=0;
-                        while(1){
+                        /*while(1){
                             char c;
                             c=fgetc(fp);
                             if(c==EOF){
@@ -1612,6 +1613,27 @@ int main(){
                                i++;
                             }
                             }
+                        }*/
+                        while(1){
+                            char c;
+
+
+                            if(i<t){
+                               if(jai[i]==h){
+                                  for(int k=0;k<strlen(string1);k++){
+                                      char x;
+                                      x=fgetc(fp);
+                                      h++;
+                                  }
+                                  i++;
+                                  fputs(string2,temp);
+                               }
+                            }
+                            if(c==EOF) break;
+                            c=fgetc(fp);
+                            h++;
+
+                            fputc(c,temp);
                         }
                   fclose(temp);
                   fclose(fp);
